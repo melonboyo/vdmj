@@ -30,12 +30,15 @@ import com.fujitsu.vdmj.runtime.Interpreter;
 import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCClassList;
 
+
+
 public class Vdm2umlPlugin extends CommandPlugin
 {
+	
 	public Vdm2umlPlugin(Interpreter interpreter)
 	{
 		super(interpreter);
-	}
+	}	
 
 	@Override
 	public boolean run(String[] argv) throws Exception
@@ -43,14 +46,16 @@ public class Vdm2umlPlugin extends CommandPlugin
 		if (interpreter instanceof ClassInterpreter)
 		{
 			TCClassList classes = interpreter.getTC();
-			StringBuilder buffer = new StringBuilder();
 			
+			Buffers buffers = new Buffers(); 
+
 			for (TCClassDefinition cdef: classes)
 			{
-				cdef.apply(new UMLGenerator(), buffer);
+				cdef.apply(new UMLGenerator(), buffers);
 			}
 			
-			System.out.println(buffer.toString());
+			System.out.println(buffers.defs.toString());
+			System.out.println(buffers.asocs.toString());
 		}
 		else
 		{

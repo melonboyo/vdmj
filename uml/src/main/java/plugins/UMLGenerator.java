@@ -32,86 +32,100 @@ import com.fujitsu.vdmj.tc.definitions.TCInstanceVariableDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCTypeDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCValueDefinition;
 import com.fujitsu.vdmj.tc.definitions.visitors.TCDefinitionVisitor;
+import com.fujitsu.vdmj.tc.lex.TCNameToken;
 
-public class UMLGenerator extends TCDefinitionVisitor<Object, StringBuilder>
+public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 {
 	@Override
-	public Object caseDefinition(TCDefinition node, StringBuilder arg)
+	public Object caseDefinition(TCDefinition node, Buffers arg)
 	{
 		return null;
 	}
 
 	@Override
-	public Object caseClassDefinition(TCClassDefinition node, StringBuilder arg)
+	public Object caseClassDefinition(TCClassDefinition node, Buffers arg)
 	{
-		arg.append("class ");
-		arg.append(node.name.getName());
-		arg.append("\n{\n");
+		arg.defs.append("class ");
 		
+		arg.defs.append(node.name.getName());
+		arg.defs.append("\n{\n");
+
+		if (!node.supernames.isEmpty())
+		{
+			for (TCNameToken supername: node.supernames)
+			{
+				arg.asocs.append(node.name.getName() + " <|-- " + supername.getName());
+			}
+		}
+
 		for (TCDefinition def: node.definitions)
 		{
 			def.apply(this, arg);
 		}
-		
-		arg.append("}\n");
+
+		arg.defs.append("}\n");
 		return null;
 	}
 	
 	@Override
-	public Object caseInstanceVariableDefinition(TCInstanceVariableDefinition node, StringBuilder arg)
+	public Object caseInstanceVariableDefinition(TCInstanceVariableDefinition node, Buffers arg)
 	{
-		arg.append(node.accessSpecifier);
-		arg.append(" ");
-		arg.append(node.name.getName() + "::" + node.getType());
-		arg.append("\n");
+		arg.defs.append(node.accessSpecifier);
+		arg.defs.append(" ");
+		arg.defs.append(node.name.getName() + "::" + node.getType());
+		arg.defs.append("\n");
 
 		return null;
 	}
 	
 	@Override
-	public Object caseTypeDefinition(TCTypeDefinition node, StringBuilder arg)
+	public Object caseTypeDefinition(TCTypeDefinition node, Buffers arg)
 	{
-		arg.append(node.accessSpecifier);
-		arg.append(" ");
-		arg.append(node.name.getName());
-		arg.append("\n");
+		arg.defs.append(node.accessSpecifier);
+		arg.defs.append(" ");
+		arg.defs.append(node.name.getName());
+		arg.defs.append(" <<type>>");
+		arg.defs.append("\n");
 
 		return null;
 	}
 	
 	@Override
-	public Object caseExplicitFunctionDefinition(TCExplicitFunctionDefinition node, StringBuilder arg)
+	public Object caseExplicitFunctionDefinition(TCExplicitFunctionDefinition node, Buffers arg)
 	{
-		arg.append(node.accessSpecifier);
-		arg.append(" ");
-		arg.append(node.name.getName());
-		arg.append("\n");
+		arg.defs.append(node.accessSpecifier);
+		arg.defs.append(" ");
+		arg.defs.append(node.name.getName());
+		arg.defs.append(" <<function>>");
+		arg.defs.append("\n");
 
 		return null;
 	}
 	
 	@Override
-	public Object caseExplicitOperationDefinition(TCExplicitOperationDefinition node, StringBuilder arg)
+	public Object caseExplicitOperationDefinition(TCExplicitOperationDefinition node, Buffers arg)
 	{
-		arg.append(node.accessSpecifier);
-		arg.append(" ");
-		arg.append(node.name.getName());
-		arg.append("\n");
+		arg.defs.append(node.accessSpecifier);
+		arg.defs.append(" ");
+		arg.defs.append(node.name.getName());
+		arg.defs.append("\n");
 
 		return null;
 	}
 	
 	@Override
-	public Object caseValueDefinition(TCValueDefinition node, StringBuilder arg)
+	public Object caseValueDefinition(TCValueDefinition node, Buffers arg)
 	{
 		for (TCDefinition def: node.getDefinitions())
 		{
-			arg.append(def.accessSpecifier);
-			arg.append(" ");
-			arg.append(def.name.getName());
-			arg.append("\n");
+			arg.defs.append(def.accessSpecifier);
+			arg.defs.append(" ");
+			arg.defs.append(" <<value>>");
+			arg.defs.append(def.name.getName());
+			arg.defs.append("\n");
 		}
 
 		return null;
 	}
+
 }
