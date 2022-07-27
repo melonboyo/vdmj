@@ -3,7 +3,6 @@ package plugins;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.nio.file.Path;
 
 import com.fujitsu.vdmj.commands.CommandPlugin;
 import com.fujitsu.vdmj.runtime.ClassInterpreter;
@@ -31,14 +30,8 @@ public class Uml2vdmPlugin extends CommandPlugin {
 			help();
 			return true;
 		}
-		File inputfile = new File(inputfilepath);
-		BufferedReader br
-            = new BufferedReader(new FileReader(inputfile));
- 
-        String st;
-        while ((st = br.readLine()) != null)
-            System.out.println(st);
-		br.close();
+		UMLAnalyser analyser = new UMLAnalyser(inputfilepath);
+		analyser.Analyse();
 
 		return true;
 	}
