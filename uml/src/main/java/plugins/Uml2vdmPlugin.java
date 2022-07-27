@@ -4,8 +4,8 @@ import java.io.File;
 import com.fujitsu.vdmj.commands.CommandPlugin;
 import com.fujitsu.vdmj.runtime.ClassInterpreter;
 import com.fujitsu.vdmj.runtime.Interpreter;
-/* import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
-import com.fujitsu.vdmj.tc.definitions.TCClassList; */
+import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
+import com.fujitsu.vdmj.tc.definitions.TCClassList; 
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -34,14 +34,11 @@ public class Uml2vdmPlugin extends CommandPlugin {
 
 		File file = new File(path);
 
-		BufferedReader br = new BufferedReader(new FileReader(file.getName()));
+		BufferedReader br = new BufferedReader(new FileReader(file));
  		String line;
- 		while ((line = br.readLine()) != null) 
-		{
+ 		while ((line = br.readLine()) != null) {
    			System.out.println(line);
- 		}
-
-		br.close();
+ 		} br.close();
 		
 		return true;
 	}
