@@ -5,11 +5,7 @@ import com.fujitsu.vdmj.runtime.ClassInterpreter;
 import com.fujitsu.vdmj.runtime.Interpreter;
 import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCClassList;
-import org.
-
 public class Uml2vdmPlugin extends CommandPlugin {
-
-    { parse, parseFile, formatters } = require('plantuml-parser');
     
     public Uml2vdmPlugin(Interpreter interpreter)
 	{
@@ -18,7 +14,9 @@ public class Uml2vdmPlugin extends CommandPlugin {
 
 	@Override
 	public boolean run(String[] argv) throws Exception
-	{		
+	{
+		
+
 		return true;
 	}
 
