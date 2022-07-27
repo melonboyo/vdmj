@@ -34,13 +34,14 @@ public class Uml2vdmPlugin extends CommandPlugin {
 
 		File file = new File(path);
 
-		try (BufferedReader br = new BufferedReader(new FileReader(file.getName()))) 
+		BufferedReader br = new BufferedReader(new FileReader(file.getName()));
+ 		String line;
+ 		while ((line = br.readLine()) != null) 
 		{
-			String line;
-			while ((line = br.readLine()) != null) {
-				System.out.println(line);
-			}
-		} 
+   			System.out.println(line);
+ 		}
+
+		br.close();
 		
 		return true;
 	}
