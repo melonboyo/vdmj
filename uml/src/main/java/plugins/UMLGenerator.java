@@ -38,6 +38,10 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, StringBuilder>
 	@Override
 	public Object caseDefinition(TCDefinition node, StringBuilder arg)
 	{
+		arg.append("=======================\n");
+		arg.append("Undefined case: ");
+		arg.append(node.name.getName());
+		arg.append("\n=======================\n");
 		return null;
 	}
 
