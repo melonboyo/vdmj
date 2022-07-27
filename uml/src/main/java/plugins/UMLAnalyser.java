@@ -15,6 +15,7 @@ import com.fujitsu.vdmj.tc.definitions.TCInstanceVariableDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCTypeDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCValueDefinition;
 import com.fujitsu.vdmj.tc.definitions.visitors.TCDefinitionVisitor;
+import java.lang.StringBuilder;
 
 public class UMLAnalyser {
 
@@ -42,8 +43,10 @@ public class UMLAnalyser {
         }
 
         while ((line = br.readLine()) != null) {
+            int id = 1;
             if (line.contains("{")) {
-                caseClass();
+                caseClass(id);
+                id++;
             }
         }
         
@@ -51,11 +54,14 @@ public class UMLAnalyser {
                            "---ANALYSIS COMPLETE---\n" +
                            "-----------------------");
     }
-
-    public void caseClass() throws IOException {
+    
+    public void caseClass(int classId) throws IOException {
         String line;
         while ((line = br.readLine()) != null) {
-            
+            if (line.contains("name")) {
+                String name = line.substring(17, line.length() - 2);
+                System.out.println("Class #" + classId + ": " + name + "\n");
+            }
         }
     }
 }
