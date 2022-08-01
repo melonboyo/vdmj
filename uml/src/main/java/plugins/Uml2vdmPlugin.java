@@ -30,8 +30,8 @@ public class Uml2vdmPlugin extends CommandPlugin {
 			help();
 			return true;
 		}
-		UMLAnalyser analyser = new UMLAnalyser(inputfilepath);
-		analyser.Analyse();
+/* 		UMLAnalyser analyser = new UMLAnalyser(inputfilepath);
+		analyser.Analyse(); */
 
 		return true;
 	}
