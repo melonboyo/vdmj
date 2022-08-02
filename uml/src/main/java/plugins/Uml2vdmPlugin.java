@@ -57,11 +57,19 @@ public class Uml2vdmPlugin extends CommandPlugin {
 				
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					System.out.println("Class : " 
-					   + eElement.getAttribute("name"));
+					System.out.println("Class " + eElement.getAttribute("name"));
+					
 
+					NodeList opList = eElement.getElementsByTagName("UML:Operation");
+					for (int count = 0; count < opList.getLength(); count++) {
+						
+						Element feat = (Element) opList.item(count);
+						
+						System.out.println(feat.getAttribute("name"));
+					}
 				
 				}
+
 			}
 		}
 		catch (Exception e) {
