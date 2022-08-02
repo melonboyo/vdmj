@@ -79,9 +79,11 @@ public class Uml2vdmPlugin extends CommandPlugin {
 				NodeList attributeList = eElement.getElementsByTagName("UML:Attribute");
 				NodeList operationList = eElement.getElementsByTagName("UML:Operation");
 				
+				values(attributeList);
+				types(attributeList);
 				instanceVariables(attributeList);
+				functions(operationList);
 				operations(operationList);
-				
 				System.out.println("\n");
 			}
 		}	
@@ -98,17 +100,60 @@ public class Uml2vdmPlugin extends CommandPlugin {
 			
 			if (! (aElement.getAttribute("name").contains("«type»")) 
 				|| aElement.getAttribute("name").contains("«value»"))
-			{
-				System.out.println(aElement.getAttribute("name"));
+			{		
+				System.out.println(visibility(aElement) + aElement.getAttribute("name"));
 			}
-
 		}
-
 	}
 
-	private void operations(NodeList list){
+	private void types(NodeList list){
 
-		System.out.println("operations \n" );
+		System.out.println("types\n" );
+	
+		for (int count = 0; count < list.getLength(); count++) {
+					
+			Element aElement  = (Element) list.item(count);
+			
+			if (aElement.getAttribute("name").contains("«type»"))
+			{		
+				System.out.println(visibility(aElement) + aElement.getAttribute("name"));
+			}
+		} 
+	}
+
+	private void values(NodeList list){
+
+		System.out.println("values\n" );
+	
+		for (int count = 0; count < list.getLength(); count++) {
+					
+			Element aElement  = (Element) list.item(count);
+			
+			if (aElement.getAttribute("name").contains("«value»"))
+			{		
+				System.out.println(visibility(aElement) + aElement.getAttribute("name"));
+			}
+		} 
+	}
+
+	private void functions(NodeList list)
+	{
+		System.out.println("functions\n" );
+	
+		for (int count = 0; count < list.getLength(); count++) {
+					
+			Element oElement  = (Element) list.item(count);
+			
+			if (oElement.getAttribute("name").contains("«function»"))
+			{
+				System.out.println(visibility(oElement) + oElement.getAttribute("name"));
+			}
+		}
+	}
+
+	private void operations(NodeList list)
+	{
+		System.out.println("operations\n" );
 	
 		for (int count = 0; count < list.getLength(); count++) {
 					
@@ -116,13 +161,19 @@ public class Uml2vdmPlugin extends CommandPlugin {
 			
 			if (!oElement.getAttribute("name").contains("«function»"))
 			{
-				System.out.println(oElement.getAttribute("name"));
+				System.out.println(visibility(oElement) + oElement.getAttribute("name"));
 			}
-
 		}
-
 	}
 
+	private String visibility(Element element)
+	{
+		if (element.getAttribute("visibility").contains("private")) 
+			return "private ";
+	
+		else return "public ";
+	}
+	
 
 	@Override
 	public String help()
