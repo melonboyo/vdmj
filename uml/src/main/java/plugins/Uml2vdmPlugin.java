@@ -13,6 +13,7 @@ import java.io.FileReader;
 
 import java.io.File;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.print.Doc;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -48,29 +49,10 @@ public class Uml2vdmPlugin extends CommandPlugin {
          	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
          	Document doc = dBuilder.parse(inputFile);
          	doc.getDocumentElement().normalize();
-			NodeList nList = doc.getElementsByTagName("UML:Class");
-			System.out.println("----------------------------");
-
-			for (int temp = 0; temp < nList.getLength(); temp++) 
-			{
-				Node nNode = nList.item(temp);
-				
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-					Element eElement = (Element) nNode;
-					System.out.println("Class " + eElement.getAttribute("name"));
-					
-
-					NodeList opList = eElement.getElementsByTagName("UML:Operation");
-					for (int count = 0; count < opList.getLength(); count++) {
-						
-						Element feat = (Element) opList.item(count);
-						
-						System.out.println(feat.getAttribute("name"));
-					}
-				
-				}
-
-			}
+			
+			
+			vdmGenerator(doc);
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -78,7 +60,70 @@ public class Uml2vdmPlugin extends CommandPlugin {
 
 		return true;
 	}
+
+
+
+
+	private boolean vdmGenerator(Document doc)
+	{		
+		NodeList nList = doc.getElementsByTagName("UML:Class");
+
+		for (int temp = 0; temp < nList.getLength(); temp++) 
+		{
+			Node nNode = nList.item(temp);
+			
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) nNode;
+				System.out.println("Class " + eElement.getAttribute("name"));
+				
+				NodeList attributeList = eElement.getElementsByTagName("UML:Attribute");
+				NodeList operationList = eElement.getElementsByTagName("UML:Operation");
+				
+				instanceVariables(attributeList);
+				operations(operationList);
+				
+				System.out.println("\n");
+			}
+		}	
+		return true;
+	}
+
+	private void instanceVariables(NodeList list){
+
+		System.out.println("instance variables \n" );
 	
+		for (int count = 0; count < list.getLength(); count++) {
+					
+			Element aElement  = (Element) list.item(count);
+			
+			if (! (aElement.getAttribute("name").contains("«type»")) 
+				|| aElement.getAttribute("name").contains("«value»"))
+			{
+				System.out.println(aElement.getAttribute("name"));
+			}
+
+		}
+
+	}
+
+	private void operations(NodeList list){
+
+		System.out.println("operations \n" );
+	
+		for (int count = 0; count < list.getLength(); count++) {
+					
+			Element oElement  = (Element) list.item(count);
+			
+			if (!oElement.getAttribute("name").contains("«function»"))
+			{
+				System.out.println(oElement.getAttribute("name"));
+			}
+
+		}
+
+	}
+
+
 	@Override
 	public String help()
 	{
