@@ -35,6 +35,11 @@
 			<artifactId>vdmj</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>2.1.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>

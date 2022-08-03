@@ -32,6 +32,8 @@ public class Uml2vdmPlugin extends CommandPlugin {
 		}
 /* 		UMLAnalyser analyser = new UMLAnalyser(inputfilepath);
 		analyser.Analyse(); */
+		UMLLoader loader = new UMLLoader(inputfilepath);
+		loader.Load();
 
 		return true;
 	}
