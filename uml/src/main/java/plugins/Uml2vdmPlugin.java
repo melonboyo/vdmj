@@ -4,28 +4,34 @@ import java.io.File;
 import com.fujitsu.vdmj.commands.CommandPlugin;
 import com.fujitsu.vdmj.runtime.Interpreter;
 
-import com.fujitsu.vdmj.runtime.ClassInterpreter;
-import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
-import com.fujitsu.vdmj.tc.definitions.TCClassList; 
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-
-import java.io.File;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.print.Doc;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
+/* import com.fujitsu.vdmj.runtime.ClassInterpreter;
+import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
+import com.fujitsu.vdmj.tc.definitions.TCClassList; */ 
+
+/* import java.io.BufferedReader;
+import java.io.FileReader;
+import javax.print.Doc;
+import java.io.File; */
+
+import java.io.*;
+import java.util.*;
+
 public class Uml2vdmPlugin extends CommandPlugin {
     
-    public Uml2vdmPlugin(Interpreter interpreter)
+    private Hashtable<String, Element> cHash = new Hashtable<String, Element>(); 
+
+	public Uml2vdmPlugin(Interpreter interpreter)
 	{
 		super(interpreter);
 	}
+
 
 	@Override
 	public boolean run(String[] argv) throws Exception
@@ -50,7 +56,6 @@ public class Uml2vdmPlugin extends CommandPlugin {
          	Document doc = dBuilder.parse(inputFile);
          	doc.getDocumentElement().normalize();
 			
-			
 			vdmGenerator(doc);
 			
 		}
@@ -62,23 +67,34 @@ public class Uml2vdmPlugin extends CommandPlugin {
 	}
 
 
-
-
 	private boolean vdmGenerator(Document doc)
 	{		
-		NodeList nList = doc.getElementsByTagName("UML:Class");
+	
+		NodeList cList = doc.getElementsByTagName("UML:Class");
+		NodeList iList = doc.getElementsByTagName("UML:Generalization");
 
-		for (int temp = 0; temp < nList.getLength(); temp++) 
+		//Mapping class xmi.id to xml element 
+		for (int count = 0; count < cList.getLength(); count++) 
 		{
-			Node nNode = nList.item(temp);
+			Element cElement = (Element) cList.item(count);
+
+			if (! (cElement.getAttribute("xmi.id") == null || (cElement == null)))
+			{
+				cHash.put(cElement.getAttribute("xmi.id"), cElement);
+			}
+		}
+
+		for (int temp = 0; temp < cList.getLength(); temp++) 
+		{
+			Node nNode = cList.item(temp);
 			
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) nNode;
-				System.out.println("Class " + eElement.getAttribute("name"));
-				
+					
 				NodeList attributeList = eElement.getElementsByTagName("UML:Attribute");
-				NodeList operationList = eElement.getElementsByTagName("UML:Operation");
+				NodeList operationList = eElement.getElementsByTagName("UML:Operation");		
 				
+				classes(eElement, isInherited(eElement, iList));
 				values(attributeList);
 				types(attributeList);
 				instanceVariables(attributeList);
@@ -88,6 +104,34 @@ public class Uml2vdmPlugin extends CommandPlugin {
 			}
 		}	
 		return true;
+	}
+
+
+	//returns the xmi.id of the parent class. return empty string if class is not inherited.
+	private String isInherited(Element el, NodeList iList)
+	{
+		String childId = el.getAttribute("xmi.id");
+
+		for (int count = 0; count < iList.getLength(); count++) {
+			Element iElement = (Element) iList.item(count);
+
+			if(childId.equals(iElement.getAttribute("child")))
+			{
+				Element parent = cHash.get(iElement.getAttribute("parent"));
+				return parent.getAttribute("name");
+			}	
+		}
+		return "";
+	}
+	
+	private void classes(Element el, String relation)
+	{
+		if(relation.isEmpty())
+			System.out.println("Class " + el.getAttribute("name"));
+		
+		else
+			System.out.println("Class " + el.getAttribute("name") + 
+			" is subclass of " + relation);
 	}
 
 	private void instanceVariables(NodeList list){
