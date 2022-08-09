@@ -22,7 +22,7 @@
  *
  ******************************************************************************/
 
-package plugins.VDM2UML;
+package plugins;
 
 import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCDefinition;

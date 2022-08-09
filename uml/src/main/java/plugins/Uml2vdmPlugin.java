@@ -47,7 +47,12 @@ public class Uml2vdmPlugin extends CommandPlugin {
          	doc.getDocumentElement().normalize();
 			
 			vdmGenerator(doc);
+
+			VDMPrinter printer = new VDMPrinter(classList);
 			
+			printer.printVDM(path.replace(inputFile.getName(), ""));
+
+		
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -67,9 +72,7 @@ public class Uml2vdmPlugin extends CommandPlugin {
 		addInheritance(gList);
 		addAssociations(rList);
 
-		VDMPrinter printer = new VDMPrinter(classList);
-
-		printer.printVDM();
+		
 
 		return true;
 	}
