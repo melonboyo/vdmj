@@ -22,7 +22,7 @@
  *
  ******************************************************************************/
 
-package plugins;
+package plugins.VDM2UML;
 
 import com.fujitsu.vdmj.commands.CommandPlugin;
 import com.fujitsu.vdmj.runtime.ClassInterpreter;

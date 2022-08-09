@@ -13,21 +13,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
 
-/* import com.fujitsu.vdmj.runtime.ClassInterpreter;
-import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
-import com.fujitsu.vdmj.tc.definitions.TCClassList; */ 
-
-/* import java.io.BufferedReader;
-import java.io.FileReader;
-import javax.print.Doc;
-import java.io.File; */
-
-
-
 public class Uml2vdmPlugin extends CommandPlugin {
     
-    private Hashtable<String, Element> cHash = new Hashtable<String, Element>(); 
-	private List<XMIAssociation> asList =new ArrayList<XMIAssociation>();  
+    private Hashtable<String, XMIClass> cHash = new Hashtable<String, XMIClass>(); 
+	private List<XMIClass> classList =new ArrayList<XMIClass>();  
 
 	public Uml2vdmPlugin(Interpreter interpreter)
 	{
@@ -74,44 +63,39 @@ public class Uml2vdmPlugin extends CommandPlugin {
 		NodeList gList = doc.getElementsByTagName("UML:Generalization");
 		NodeList rList = doc.getElementsByTagName("UML:Association");
 
+		createClasses(cList);
+		addInheritance(gList);
+		addAssociations(rList);
 
-		//Mapping class xmi.id to xml element 
-		for (int count = 0; count < cList.getLength(); count++) 
-		{
-			Element cElement = (Element) cList.item(count);
+		VDMPrinter printer = new VDMPrinter(classList);
 
-			if (! (cElement.getAttribute("xmi.id") == null || (cElement == null)))
-			{
-				cHash.put(cElement.getAttribute("xmi.id"), cElement);
-			}
-		}
+		printer.printVDM();
 
-		createAssociations(rList);
-
-		for (int temp = 0; temp < cList.getLength(); temp++) 
-		{
-			Node nNode = cList.item(temp);
-			
-			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-				Element eElement = (Element) nNode;
-					
-				NodeList attributeList = eElement.getElementsByTagName("UML:Attribute");
-				NodeList operationList = eElement.getElementsByTagName("UML:Operation");		
-				
-				classes(eElement, isInherited(eElement, gList));
-				values(attributeList);
-				types(attributeList);
-				instanceVariables(attributeList, eElement.getAttribute("xmi.id"));
-				
-				functions(operationList);
-				operations(operationList);
-				System.out.println("\n");
-			}
-		}	
 		return true;
 	}
+	
+	private void createClasses(NodeList list)
+	{
+		for (int temp = 0; temp < list.getLength(); temp++) 
+		{
+			Node nNode = list.item(temp);
+			
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) 
+			{
+				Element cElement = (Element) nNode;
+				
+				XMIClass c = new XMIClass(cElement);
+				classList.add(c);
+				
+				if (! (cElement.getAttribute("xmi.id") == null || (cElement == null)))
+				{
+					cHash.put(cElement.getAttribute("xmi.id"), c);
+				}
+			}
+		}		
+	}		
 
-	private void createAssociations(NodeList list)
+	private void addAssociations(NodeList list)
 	{		
 		for (int count = 0; count < list.getLength(); count++) 
 		{
@@ -119,133 +103,32 @@ public class Uml2vdmPlugin extends CommandPlugin {
 
 			XMIAssociation rel = new XMIAssociation(rElement);
 			
-			asList.add(rel);
-		}
-	}
-
-	private void instanceVariables(NodeList list, String ID){
-
-		System.out.println("instance variables \n" );
-
-		for (int n = 0; n < asList.size(); n++) 
-		{	
-			String startID = asList.get(n).getStartID();
-			String relType = asList.get(n).getType();
+			rel.setParentName(cHash.get(rel.getEndID()).getName());
 			
-			if (startID.equals(ID) && relType.equals("variable"))
-			{
-				String endName = cHash.get(asList.get(n).getEndID()).getAttribute("name");
-				System.out.println(asList.get(n).getName() + " : " + endName + ";");
-			}
-		}
-	
-		for (int count = 0; count < list.getLength(); count++) {
-					
-			Element aElement  = (Element) list.item(count);
-			
-			if (! (aElement.getAttribute("name").contains("«type»") || aElement.getAttribute("name").contains("«value»")))
-			{		
-				System.out.println(visibility(aElement) + aElement.getAttribute("name"));
-			}
+			XMIClass c = cHash.get(rel.getStartID());
+			c.addAssoc(rel);
 		}
 	}
 
-	//returns the xmi.id of the parent class. return empty string if class is not inherited.
-	private String isInherited(Element el, NodeList iList)
-	{
-		String childId = el.getAttribute("xmi.id");
-
-		for (int count = 0; count < iList.getLength(); count++) {
-			Element iElement = (Element) iList.item(count);
-
-			if(childId.equals(iElement.getAttribute("child")))
-			{
-				Element parent = cHash.get(iElement.getAttribute("parent"));
-				return parent.getAttribute("name");
-			}	
-		}
-		return "";
-	}
-	
-	private void classes(Element el, String relation)
-	{
-		if(relation.isEmpty())
-			System.out.println("Class " + el.getAttribute("name"));
+	private void addInheritance(NodeList list)
+	{	
 		
-		else
-			System.out.println("Class " + el.getAttribute("name") + 
-			" is subclass of " + relation);
-	}
-
-
-
-	private void types(NodeList list){
-
-		System.out.println("types\n" );
-	
-		for (int count = 0; count < list.getLength(); count++) {
-					
-			Element aElement  = (Element) list.item(count);
+		for (int count = 0; count < list.getLength(); count++) 
+		{	
+			Element iElement = (Element) list.item(count);
 			
-			if (aElement.getAttribute("name").contains("«type»"))
-			{		
-				System.out.println(visibility(aElement) + aElement.getAttribute("name"));
-			}
-		} 
-	}
+			String cID = iElement.getAttribute("child");
 
-	private void values(NodeList list){
-
-		System.out.println("values\n" );
-	
-		for (int count = 0; count < list.getLength(); count++) {
-					
-			Element aElement  = (Element) list.item(count);
+			XMIClass childClass = cHash.get(cID);
+			childClass.setInheritance(true);
 			
-			if (aElement.getAttribute("name").contains("«value»"))
-			{		
-				System.out.println(visibility(aElement) + aElement.getAttribute("name"));
-			}
-		} 
-	}
-
-	private void functions(NodeList list)
-	{
-		System.out.println("functions\n" );
-	
-		for (int count = 0; count < list.getLength(); count++) {
-					
-			Element oElement  = (Element) list.item(count);
+			String pID = iElement.getAttribute("parent");
+			XMIClass parentClass = cHash.get(pID);
 			
-			if (oElement.getAttribute("name").contains("«function»"))
-			{
-				System.out.println(visibility(oElement) + oElement.getAttribute("name"));
-			}
+			childClass.setParent(parentClass.getName());
 		}
 	}
 
-	private void operations(NodeList list)
-	{
-		System.out.println("operations\n" );
-	
-		for (int count = 0; count < list.getLength(); count++) {
-					
-			Element oElement  = (Element) list.item(count);
-			
-			if (!oElement.getAttribute("name").contains("«function»"))
-			{
-				System.out.println(visibility(oElement) + oElement.getAttribute("name"));
-			}
-		}
-	}
-
-	private String visibility(Element element)
-	{
-		if (element.getAttribute("visibility").contains("private")) 
-			return "private ";
-	
-		else return "public ";
-	}
 
 	@Override
 	public String help()

@@ -1,4 +1,4 @@
-package plugins;
+package plugins.VDM2UML;
 
 public class Buffers 
 {

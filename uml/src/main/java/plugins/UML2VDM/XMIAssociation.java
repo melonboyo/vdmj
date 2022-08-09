@@ -8,12 +8,13 @@ import org.w3c.dom.NodeList;
 public class XMIAssociation 
 {
     private String name;
+    private String parentName;
     private String endID;
     private String startID;
     private String type;
 
-    public XMIAssociation(Element rElement){
-            
+    public XMIAssociation(Element rElement)
+    {     
         this.setName(rElement.getAttribute("name"));
 
         NodeList relAttList = rElement.getElementsByTagName("UML:AssociationEnd");
@@ -23,7 +24,6 @@ public class XMIAssociation
         
         Element relEnd  = (Element) relAttList.item(1);
         this.setEndID(relEnd.getAttribute("type"));
-
     }
 
     private void setStartID(String ID)
@@ -52,6 +52,11 @@ public class XMIAssociation
         this.type = newtype;
     }
 
+    public void setParentName(String parent)
+    {
+        this.parentName = parent;
+    }
+
     public String getStartID()
     {
         return startID;
@@ -65,6 +70,11 @@ public class XMIAssociation
     public String getName()
     {
         return name;
+    }
+
+    public String getParentName()
+    {
+        return parentName;
     }
 
     public String getType()
