@@ -4,12 +4,14 @@ import java.io.File;
 import com.fujitsu.vdmj.commands.CommandPlugin;
 import com.fujitsu.vdmj.runtime.Interpreter;
 
+import java.util.*;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
+
 
 /* import com.fujitsu.vdmj.runtime.ClassInterpreter;
 import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
@@ -20,18 +22,17 @@ import java.io.FileReader;
 import javax.print.Doc;
 import java.io.File; */
 
-import java.io.*;
-import java.util.*;
+
 
 public class Uml2vdmPlugin extends CommandPlugin {
     
     private Hashtable<String, Element> cHash = new Hashtable<String, Element>(); 
+	private List<XMIAssociation> asList =new ArrayList<XMIAssociation>();  
 
 	public Uml2vdmPlugin(Interpreter interpreter)
 	{
 		super(interpreter);
 	}
-
 
 	@Override
 	public boolean run(String[] argv) throws Exception
@@ -66,12 +67,13 @@ public class Uml2vdmPlugin extends CommandPlugin {
 		return true;
 	}
 
-
 	private boolean vdmGenerator(Document doc)
 	{		
 	
 		NodeList cList = doc.getElementsByTagName("UML:Class");
-		NodeList iList = doc.getElementsByTagName("UML:Generalization");
+		NodeList gList = doc.getElementsByTagName("UML:Generalization");
+		NodeList rList = doc.getElementsByTagName("UML:Association");
+
 
 		//Mapping class xmi.id to xml element 
 		for (int count = 0; count < cList.getLength(); count++) 
@@ -84,6 +86,8 @@ public class Uml2vdmPlugin extends CommandPlugin {
 			}
 		}
 
+		createAssociations(rList);
+
 		for (int temp = 0; temp < cList.getLength(); temp++) 
 		{
 			Node nNode = cList.item(temp);
@@ -94,10 +98,11 @@ public class Uml2vdmPlugin extends CommandPlugin {
 				NodeList attributeList = eElement.getElementsByTagName("UML:Attribute");
 				NodeList operationList = eElement.getElementsByTagName("UML:Operation");		
 				
-				classes(eElement, isInherited(eElement, iList));
+				classes(eElement, isInherited(eElement, gList));
 				values(attributeList);
 				types(attributeList);
-				instanceVariables(attributeList);
+				instanceVariables(attributeList, eElement.getAttribute("xmi.id"));
+				
 				functions(operationList);
 				operations(operationList);
 				System.out.println("\n");
@@ -106,6 +111,44 @@ public class Uml2vdmPlugin extends CommandPlugin {
 		return true;
 	}
 
+	private void createAssociations(NodeList list)
+	{		
+		for (int count = 0; count < list.getLength(); count++) 
+		{
+			Element rElement = (Element) list.item(count);
+
+			XMIAssociation rel = new XMIAssociation(rElement);
+			
+			asList.add(rel);
+		}
+	}
+
+	private void instanceVariables(NodeList list, String ID){
+
+		System.out.println("instance variables \n" );
+
+		for (int n = 0; n < asList.size(); n++) 
+		{	
+			String startID = asList.get(n).getStartID();
+			String relType = asList.get(n).getType();
+			
+			if (startID.equals(ID) && relType.equals("variable"))
+			{
+				String endName = cHash.get(asList.get(n).getEndID()).getAttribute("name");
+				System.out.println(asList.get(n).getName() + " : " + endName + ";");
+			}
+		}
+	
+		for (int count = 0; count < list.getLength(); count++) {
+					
+			Element aElement  = (Element) list.item(count);
+			
+			if (! (aElement.getAttribute("name").contains("«type»") || aElement.getAttribute("name").contains("«value»")))
+			{		
+				System.out.println(visibility(aElement) + aElement.getAttribute("name"));
+			}
+		}
+	}
 
 	//returns the xmi.id of the parent class. return empty string if class is not inherited.
 	private String isInherited(Element el, NodeList iList)
@@ -134,21 +177,7 @@ public class Uml2vdmPlugin extends CommandPlugin {
 			" is subclass of " + relation);
 	}
 
-	private void instanceVariables(NodeList list){
 
-		System.out.println("instance variables \n" );
-	
-		for (int count = 0; count < list.getLength(); count++) {
-					
-			Element aElement  = (Element) list.item(count);
-			
-			if (! (aElement.getAttribute("name").contains("«type»")) 
-				|| aElement.getAttribute("name").contains("«value»"))
-			{		
-				System.out.println(visibility(aElement) + aElement.getAttribute("name"));
-			}
-		}
-	}
 
 	private void types(NodeList list){
 
@@ -217,7 +246,6 @@ public class Uml2vdmPlugin extends CommandPlugin {
 	
 		else return "public ";
 	}
-	
 
 	@Override
 	public String help()
