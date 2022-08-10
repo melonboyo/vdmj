@@ -34,7 +34,6 @@ import com.fujitsu.vdmj.tc.definitions.TCClassList;
 
 public class Vdm2umlPlugin extends CommandPlugin
 {
-	
 	public Vdm2umlPlugin(Interpreter interpreter)
 	{
 		super(interpreter);
@@ -47,6 +46,8 @@ public class Vdm2umlPlugin extends CommandPlugin
 		{
 			TCClassList classes = interpreter.getTC();
 			
+			String title = "temp";
+
 			Buffers buffers = new Buffers(); 
 
 			for (TCClassDefinition cdef: classes)
@@ -54,8 +55,12 @@ public class Vdm2umlPlugin extends CommandPlugin
 				cdef.apply(new UMLGenerator(), buffers);
 			}
 			
+			StringBuilder boiler = buildBoiler(title);
+
+			System.out.println(boiler.toString());
 			System.out.println(buffers.defs.toString());
 			System.out.println(buffers.asocs.toString());
+			System.out.println("@enduml");
 		}
 		else
 		{
@@ -63,6 +68,29 @@ public class Vdm2umlPlugin extends CommandPlugin
 		}
 		
 		return true;
+	}
+
+	public StringBuilder buildBoiler(String title) 
+	{
+		StringBuilder boiler = new StringBuilder();
+
+		boiler.append("@startuml\n\n");
+		boiler.append("title \"");
+		boiler.append(title);
+		boiler.append("\"\n\n");
+		boiler.append("allow_mixing\n");
+		boiler.append("skinparam packageStyle frame\n");
+		boiler.append("skinparam Shadowing false\n");
+		boiler.append("skinparam classAttributeIconSize 0\n");
+		boiler.append("skinparam ClassBorderThickness 0.5\n");
+		boiler.append("skinparam class {\n");
+		boiler.append("\tBackgroundColor AntiqueWhite\n");
+		boiler.append("\tArrowColor Black\n");
+		boiler.append("\tBorderColor Black\n}\n");
+		boiler.append("skinparam defaultTextAlignment center\n\n");
+		// Possibly add package frame
+
+		return boiler;
 	}
 
 	@Override

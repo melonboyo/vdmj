@@ -48,7 +48,7 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 		arg.defs.append("class ");
 		
 		arg.defs.append(node.name.getName());
-		arg.defs.append("\n{\n");
+		arg.defs.append("{\n");
 
 		if (!node.supernames.isEmpty())
 		{
@@ -63,13 +63,14 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 			def.apply(this, arg);
 		}
 
-		arg.defs.append("}\n");
+		arg.defs.append("}\n\n");
 		return null;
 	}
 	
 	@Override
 	public Object caseInstanceVariableDefinition(TCInstanceVariableDefinition node, Buffers arg)
 	{
+		arg.defs.append("\t");
 		arg.defs.append(node.accessSpecifier);
 		arg.defs.append(" ");
 		arg.defs.append(node.name.getName() + "::" + node.getType());
