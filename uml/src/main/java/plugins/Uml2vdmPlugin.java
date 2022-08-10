@@ -4,6 +4,10 @@ import java.io.File;
 import com.fujitsu.vdmj.commands.CommandPlugin;
 import com.fujitsu.vdmj.runtime.Interpreter;
 
+import plugins.UML2VDM.VDMPrinter;
+import plugins.UML2VDM.XMIClass;
+import plugins.UML2VDM.OLD.XMIAssociation;
+
 import java.util.*;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;

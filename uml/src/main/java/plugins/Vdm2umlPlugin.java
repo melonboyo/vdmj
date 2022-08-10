@@ -30,6 +30,9 @@ import com.fujitsu.vdmj.runtime.Interpreter;
 import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCClassList;
 
+import plugins.VDM2UML.Buffers;
+import plugins.VDM2UML.UMLGenerator;
+
 
 
 public class Vdm2umlPlugin extends CommandPlugin

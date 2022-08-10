@@ -1,4 +1,4 @@
-package plugins;
+package plugins.UML2VDM;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -6,7 +6,7 @@ import org.w3c.dom.NodeList;
 import java.util.*;
 
 
-public class XMIClass {
+public class XMIClassOld {
 
     private String name;
     private String ID;
@@ -19,10 +19,11 @@ public class XMIClass {
     private List<Element> iVariableList = new ArrayList<Element>();   
     private List<Element> operationList = new ArrayList<Element>();   
     private List<Element> functionList = new ArrayList<Element>();   
+    
     private List<XMIAssociation> assocList = new ArrayList<XMIAssociation>();  
     
 
-    public XMIClass(Element cElement){
+    public XMIClassOld(Element cElement){
         this.name = cElement.getAttribute("name");
         this.ID = cElement.getAttribute("xmi.id");
         setInheritance(false); 
@@ -68,9 +69,9 @@ public class XMIClass {
             if (aElement.getAttribute("name").contains("«type»"))
                 typeList.add(aElement);
 
-            /* if (! (aElement.getAttribute("name").contains("«type»") || 
-                    aElement.getAttribute("name").contains("«value»"))) */
-            else    
+            if (! (aElement.getAttribute("name").contains("«type»") || 
+                    aElement.getAttribute("name").contains("«value»")))
+                    
                 iVariableList.add(aElement);            
         }
     }
@@ -133,7 +134,7 @@ public class XMIClass {
     }
 
     
-    public List<Element> getFuncitons()
+    public List<Element> getFunctions()
     {
         return functionList;
     }
@@ -146,3 +147,4 @@ public class XMIClass {
 
 
 }
+

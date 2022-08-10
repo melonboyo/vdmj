@@ -1,4 +1,4 @@
-package plugins;
+package plugins.UML2VDM.OLD;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -23,7 +23,7 @@ public class XMIAssociation
         Element relEnd  = (Element) relAttList.item(1);
         this.setEndID(relEnd.getAttribute("type"));
     }
-
+    
     private void setStartID(String ID)
     {
         this.startID = ID;
