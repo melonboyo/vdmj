@@ -3,7 +3,6 @@ package plugins.UML2VDM;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import plugins.UML2VDM.OLD.XMIAssociation;
 import plugins.UML2VDM.XMIAttribute.AttTypes;
 
 import java.util.*;
@@ -19,17 +18,15 @@ public class XMIClass {
 
     private List<XMIAttribute> typeList = new ArrayList<XMIAttribute>();   
     private List<XMIAttribute> valueList = new ArrayList<XMIAttribute>();   
-    private List<XMIAttribute> varList = new ArrayList<XMIAttribute>();   
+    private List<XMIAttribute> varList = new ArrayList<XMIAttribute>(); 
     private List<Element> operationList = new ArrayList<Element>();   
     private List<Element> functionList = new ArrayList<Element>();   
-    
-    private List<XMIAssociation> assocList = new ArrayList<XMIAssociation>();  
     
 
     public XMIClass(Element cElement){
         this.name = cElement.getAttribute("name");
         this.ID = cElement.getAttribute("xmi.id");
-        setInheritance(false); 
+        this.isInherited = false;
 
         NodeList attributeList = cElement.getElementsByTagName("UML:Attribute");
         if(! (attributeList.getLength() == 0))
@@ -38,12 +35,6 @@ public class XMIClass {
         NodeList operationList = cElement.getElementsByTagName("UML:Operation");
         if(! (operationList.getLength() == 0))
             createOperations(operationList);
-        
-    }
-
-    public void addAssoc(XMIAssociation assoc)
-    {
-        assocList.add(assoc);
     }
 
     private void createOperations(NodeList list)
@@ -59,7 +50,6 @@ public class XMIClass {
                 functionList.add(oElement);
 		}
     }
-
     
     private void createAttributes(NodeList list)
     {
@@ -69,15 +59,21 @@ public class XMIClass {
 
             XMIAttribute att = new XMIAttribute(aElement);
 
-            if (att.attType == AttTypes.value)		                
+            if (att.getAttType() == AttTypes.value)		                
                 valueList.add(att);
 
-            if (att.attType == AttTypes.type)		                
+            if (att.getAttType() == AttTypes.type)		                
                 typeList.add(att);
 
-            if (att.attType == AttTypes.var)		                
+            if (att.getAttType() == AttTypes.var)		                
                 varList.add(att);          
         }
+    }
+
+    public void addAssoc(XMIAttribute att)
+    {
+        //possibly add type/value differenciation here  
+        varList.add(att);
     }
 
     public void setParent(String parentName)
@@ -143,11 +139,6 @@ public class XMIClass {
         return functionList;
     }
 
-    
-    public List<XMIAssociation> getAssociations()
-    {
-        return assocList;
-    }
 
 
 }

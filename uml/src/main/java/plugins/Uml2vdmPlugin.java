@@ -5,8 +5,8 @@ import com.fujitsu.vdmj.commands.CommandPlugin;
 import com.fujitsu.vdmj.runtime.Interpreter;
 
 import plugins.UML2VDM.VDMPrinter;
+import plugins.UML2VDM.XMIAttribute;
 import plugins.UML2VDM.XMIClass;
-import plugins.UML2VDM.OLD.XMIAssociation;
 
 import java.util.*;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,12 +50,17 @@ public class Uml2vdmPlugin extends CommandPlugin {
          	Document doc = dBuilder.parse(inputFile);
          	doc.getDocumentElement().normalize();
 			
-			vdmGenerator(doc);
+			NodeList cList = doc.getElementsByTagName("UML:Class");
+			NodeList gList = doc.getElementsByTagName("UML:Generalization");
+			NodeList rList = doc.getElementsByTagName("UML:Association");
+	 
+			createClasses(cList);
+			addInheritance(gList);
+			addAssociations(rList);
 
 			VDMPrinter printer = new VDMPrinter(classList);
 			
 			printer.printVDM(path.replace(inputFile.getName(), ""));
-
 		
 		}
 		catch (Exception e) {
@@ -64,34 +69,19 @@ public class Uml2vdmPlugin extends CommandPlugin {
 
 		return true;
 	}
-
-	private boolean vdmGenerator(Document doc)
-	{		
 	
-		NodeList cList = doc.getElementsByTagName("UML:Class");
-		NodeList gList = doc.getElementsByTagName("UML:Generalization");
-		NodeList rList = doc.getElementsByTagName("UML:Association");
-
-		createClasses(cList);
-		addInheritance(gList);
-		addAssociations(rList);
-
-		
-
-		return true;
-	}
-	
-	private void createClasses(NodeList list)
+	private void createClasses(NodeList cList)
 	{
-		for (int temp = 0; temp < list.getLength(); temp++) 
+		for (int temp = 0; temp < cList.getLength(); temp++) 
 		{
-			Node nNode = list.item(temp);
+			Node nNode = cList.item(temp);
 			
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) 
 			{
 				Element cElement = (Element) nNode;
 				
 				XMIClass c = new XMIClass(cElement);
+
 				classList.add(c);
 				
 				if (! (cElement.getAttribute("xmi.id") == null || (cElement == null)))
@@ -102,24 +92,24 @@ public class Uml2vdmPlugin extends CommandPlugin {
 		}		
 	}		
 
-	private void addAssociations(NodeList list)
+ 	private void addAssociations(NodeList list)
 	{		
 		for (int count = 0; count < list.getLength(); count++) 
 		{
 			Element rElement = (Element) list.item(count);
 
-			XMIAssociation rel = new XMIAssociation(rElement);
+			XMIAttribute rel = new XMIAttribute(rElement);
 			
-			rel.setParentName(cHash.get(rel.getEndID()).getName());
+			rel.setRelName(cHash.get(rel.getEndID()).getName()); 
 			
 			XMIClass c = cHash.get(rel.getStartID());
+			
 			c.addAssoc(rel);
 		}
-	}
+	} 
 
 	private void addInheritance(NodeList list)
 	{	
-		
 		for (int count = 0; count < list.getLength(); count++) 
 		{	
 			Element iElement = (Element) list.item(count);
@@ -135,7 +125,6 @@ public class Uml2vdmPlugin extends CommandPlugin {
 			childClass.setParent(parentClass.getName());
 		}
 	}
-
 
 	@Override
 	public String help()

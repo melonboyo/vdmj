@@ -9,15 +9,15 @@ public class XMIAttribute {
     public enum AttTypes {type, value, var}
     public enum MulTypes {set, seq, map}
 
-    public String name;
-    public String parentName;
-    public String startID;
-    public String endID;
-    public AttTypes attType;
-    public MulTypes mulType;
+    private String name;
+    private String relName;
+    private String startID;
+    private String endID;
+    private AttTypes attType;
+    private MulTypes mulType;
 
-    public String visibility;
-    public Boolean isAssociative;
+    private String visibility;
+    private Boolean isAssociative;
 
 
     public XMIAttribute(Element aElement)
@@ -88,7 +88,7 @@ public class XMIAttribute {
         else return "";
 	}
 
-   /*  private void setStartID(String ID)
+ /*    private void setStartID(String ID)
     {
         this.startID = ID;
     }
@@ -100,7 +100,7 @@ public class XMIAttribute {
 
     private void setName(String newname)
     {
-     
+        this.name = newname;
     }
 
     private void setAttType(AttTypes newtype)
@@ -111,11 +111,11 @@ public class XMIAttribute {
     private void setMulType(MulTypes newtype)
     {
         this.mulType = newtype;
-    }
+    } */
 
-    public void setParentName(String parent)
+    public void setRelName(String parent)
     {
-        this.parentName = parent;
+        this.relName = parent;
     }
 
     public void setVisibility(String newVis)
@@ -138,14 +138,19 @@ public class XMIAttribute {
         return visibility;
     }
 
+    public Boolean getIsAssociative()
+    {
+        return isAssociative;
+    }
+
     public String getName()
     {
         return name;
     }
 
-    public String getParentName()
+    public String getRelName()
     {
-        return parentName;
+        return relName;
     }  
 
     public AttTypes getAttType()
@@ -156,7 +161,7 @@ public class XMIAttribute {
     public MulTypes getMulType()
     {
         return mulType;
-    } */
+    } 
     
 }
     

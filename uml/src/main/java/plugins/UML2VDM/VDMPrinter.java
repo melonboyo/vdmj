@@ -76,7 +76,7 @@ public class VDMPrinter {
                 for (int count = 0; count < valueList.size(); count++) 
                 {
                     XMIAttribute val = valueList.get(count);
-                    writer.write(val.visibility + val.name + " = ;\n");
+                    writer.write(val.getVisibility() + val.getName() + " = ;\n");
                 }
 
                 writer.write("\n");
@@ -100,9 +100,9 @@ public class VDMPrinter {
                 {
                     XMIAttribute type = typeList.get(count);
                     
-                    String segments[] = type.name.split(":");
+                    String segments[] = type.getName().split(":");
 
-                    writer.write(type.visibility + segments[0] + "=" + segments[segments.length - 1] + ";\n");
+                    writer.write(type.getVisibility() + segments[0] + "=" + segments[segments.length - 1] + ";\n");
                 }
                 writer.write("\n");
             }
@@ -124,7 +124,13 @@ public class VDMPrinter {
                 for (int count = 0; count < varList.size(); count++) 
                 {
                     XMIAttribute var = varList.get(count);
-                    writer.write(var.visibility + var.name + ";\n");
+                    
+                    if (var.getIsAssociative())
+                        writer.write(var.getVisibility() + var.getName() + " : " + var.getRelName() + ";\n");
+
+                    else
+                        writer.write(var.getVisibility() + var.getName() + ";\n");
+                        
                 }
                 writer.write("\n");
             }

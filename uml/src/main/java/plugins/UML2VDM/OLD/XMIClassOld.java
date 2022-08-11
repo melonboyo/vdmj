@@ -1,4 +1,4 @@
-package plugins.UML2VDM;
+package plugins.UML2VDM.OLD;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
