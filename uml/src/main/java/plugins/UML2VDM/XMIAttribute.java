@@ -35,6 +35,8 @@ public class XMIAttribute {
             this.isAssociative = true;
             initializeAssoc(aElement);
         }
+
+  
     }
 
     private void initializeAssoc(Element rElement)
@@ -47,6 +49,15 @@ public class XMIAttribute {
        
         Element relEnd  = (Element) relAttList.item(1);
         this.endID = relEnd.getAttribute("type");
+
+        String mult = relEnd.getAttribute("name");
+        
+        if(mult.equals("*"))
+            this.mulType = MulTypes.set;    
+
+        if(mult.equals("(*)"))
+        this.mulType = MulTypes.seq;    
+
     }
 
 
@@ -69,9 +80,9 @@ public class XMIAttribute {
         {
             this.attType = AttTypes.var;
         }
-            
     }
 
+   
     private String remove(String s, String r)
 	{
         return s.replace(r, "");
@@ -88,34 +99,13 @@ public class XMIAttribute {
         else return "";
 	}
 
- /*    private void setStartID(String ID)
-    {
-        this.startID = ID;
-    }
-
-    private void setEndID(String ID)
-    {
-        this.endID = ID;
-    }
-
-    private void setName(String newname)
-    {
-        this.name = newname;
-    }
-
-    private void setAttType(AttTypes newtype)
-    {
-        this.attType = newtype;
-    }
-
-    private void setMulType(MulTypes newtype)
-    {
-        this.mulType = newtype;
-    } */
-
     public void setRelName(String parent)
     {
-        this.relName = parent;
+        if (parent.equals(this.name))
+        this.relName = "undef";
+
+        else
+            this.relName = parent;
     }
 
     public void setVisibility(String newVis)
@@ -158,9 +148,17 @@ public class XMIAttribute {
         return attType;
     }
 
-    public MulTypes getMulType()
+    public String getMulType()
     {
-        return mulType;
+        if (this.mulType == MulTypes.set)
+            return "set of ";
+        
+        if (this.mulType == MulTypes.seq)
+            return "seq of ";
+        
+            
+        else
+            return "undef ";
     } 
     
 }

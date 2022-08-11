@@ -52,7 +52,7 @@ public class XMIOperation {
             this.signature = OpName + ":" + vdmArgLine + " ->" + opOut;
         
         this.visibility = visibility(aElement);
-
+        
 
     }
 

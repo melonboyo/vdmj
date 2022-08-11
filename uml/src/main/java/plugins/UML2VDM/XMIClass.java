@@ -76,7 +76,12 @@ public class XMIClass {
     public void addAssoc(XMIAttribute att)
     {
         //possibly add type/value differenciation here  
-        varList.add(att);
+        
+        if (att.getAttType() == AttTypes.type)
+            typeList.add(att);
+
+        else
+            varList.add(att);
     }
 
     public void setParent(String parentName)

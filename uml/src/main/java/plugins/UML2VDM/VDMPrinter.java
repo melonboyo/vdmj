@@ -132,7 +132,7 @@ public class VDMPrinter {
                     XMIAttribute var = varList.get(count);
                     
                     if (var.getIsAssociative())
-                        writer.write(var.getVisibility() + var.getName() + " : " + var.getRelName() + ";\n");
+                        writer.write(var.getVisibility() + var.getName() +  " : " + var.getMulType() + var.getRelName() + ";\n");
 
                     else
                         writer.write(var.getVisibility() + var.getName() + ";\n");
