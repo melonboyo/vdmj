@@ -88,7 +88,6 @@ public class Vdm2umlPlugin extends CommandPlugin
 		boiler.append("\tArrowColor Black\n");
 		boiler.append("\tBorderColor Black\n}\n");
 		boiler.append("skinparam defaultTextAlignment center\n\n");
-		// Possibly add package frame
 
 		return boiler;
 	}
