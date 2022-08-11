@@ -4,6 +4,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import plugins.UML2VDM.XMIAttribute.AttTypes;
+import plugins.UML2VDM.XMIOperation.OpTypes;
 
 import java.util.*;
 
@@ -19,8 +20,8 @@ public class XMIClass {
     private List<XMIAttribute> typeList = new ArrayList<XMIAttribute>();   
     private List<XMIAttribute> valueList = new ArrayList<XMIAttribute>();   
     private List<XMIAttribute> varList = new ArrayList<XMIAttribute>(); 
-    private List<Element> operationList = new ArrayList<Element>();   
-    private List<Element> functionList = new ArrayList<Element>();   
+    private List<XMIOperation> operationList = new ArrayList<XMIOperation>();   
+    private List<XMIOperation> functionList = new ArrayList<XMIOperation>();   
     
 
     public XMIClass(Element cElement){
@@ -43,11 +44,13 @@ public class XMIClass {
 					
 			Element oElement  = (Element) list.item(count);
 			
-			if (!oElement.getAttribute("name").contains("«function»"))
-                operationList.add(oElement);
+            XMIOperation op = new XMIOperation(oElement);
 
-            if (oElement.getAttribute("name").contains("«function»"))
-                functionList.add(oElement);
+			if (op.getOpType() == OpTypes.operation)
+                operationList.add(op);
+
+            if (op.getOpType() == OpTypes.function)
+                functionList.add(op);
 		}
     }
     
@@ -128,13 +131,13 @@ public class XMIClass {
     }
 
     
-    public List<Element> getOperations()
+    public List<XMIOperation> getOperations()
     {
         return operationList;
     }
 
     
-    public List<Element> getFunctions()
+    public List<XMIOperation> getFunctions()
     {
         return functionList;
     }

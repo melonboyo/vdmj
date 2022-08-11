@@ -1,7 +1,6 @@
 package plugins.UML2VDM;
 
 import java.util.*;
-import org.w3c.dom.Element;
 import java.io.File; 
 import java.io.IOException;
 import java.io.FileWriter;  
@@ -99,10 +98,17 @@ public class VDMPrinter {
                 for (int count = 0; count < typeList.size(); count++) 
                 {
                     XMIAttribute type = typeList.get(count);
-                    
-                    String segments[] = type.getName().split(":");
 
-                    writer.write(type.getVisibility() + segments[0] + "=" + segments[segments.length - 1] + ";\n");
+                    if(type.getName().contains(":"))
+                    {
+                        String segments[] = type.getName().split(":");
+                        writer.write(type.getVisibility() + segments[0] + "=" + segments[segments.length - 1] + ";\n");
+                    }
+                    
+                    else
+                        writer.write(type.getVisibility() + type.getName() + " = " + "undef" + ";\n");
+
+                    
                 }
                 writer.write("\n");
             }
@@ -145,15 +151,15 @@ public class VDMPrinter {
         try {
             if (!c.getOperations().isEmpty())
             {
-                List<Element> opList = c.getOperations();
+                List<XMIOperation> opList = c.getOperations();
 
                 writer.write("operations\n");
 
                 for (int count = 0; count < opList.size(); count++) 
                 {
-                    String op = opList.get(count).getAttribute("name");
+                    XMIOperation op = opList.get(count);
 
-                    writer.write(visibility(opList.get(count)) + op + ";\n");
+                    writer.write(op.getVisibility() + op.getSignature() + "\n");
                 }
                 writer.write("\n");
             }
@@ -166,17 +172,17 @@ public class VDMPrinter {
     private void printFunctions(FileWriter writer, XMIClass c)
     {
         try {
-            if (!c.getFunctions().isEmpty())
+            if (!c.getOperations().isEmpty())
             {
-                List<Element> funList = c.getFunctions();
+                List<XMIOperation> funcList = c.getFunctions();
 
                 writer.write("functions\n");
 
-                for (int count = 0; count < funList.size(); count++) 
+                for (int count = 0; count < funcList.size(); count++) 
                 {
-                    String fun = remove(funList.get(count).getAttribute("name"), "«function»");
-                    
-                    writer.write(visibility(funList.get(count)) + fun + ";\n");
+                    XMIOperation fun = funcList.get(count);
+
+                    writer.write(fun.getVisibility() + fun.getSignature() + "\n");
                 }
                 writer.write("\n");
             }
@@ -185,22 +191,6 @@ public class VDMPrinter {
             e.printStackTrace();
         }       
     } 
-
-    private String visibility(Element element)
-	{
-		if (element.getAttribute("visibility").contains("private")) 
-			return "private ";
-	
-		if (element.getAttribute("visibility").contains("public"))
-            return "public ";
-
-        else return "";
-	}
-
-    private String remove(String s, String r)
-	{
-        return s.replace(r, "");
-	}
 
 
 

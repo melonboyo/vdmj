@@ -61,7 +61,7 @@ public class XMIAttribute {
         if (aElement.getAttribute("name").contains("«type»"))
         {
             this.attType = AttTypes.type;
-            this.name = remove(this.name, "«type»");      
+            this.name = remove(this.name, " «type»");      
         }
         
         if (! (aElement.getAttribute("name").contains("«type»") || 
