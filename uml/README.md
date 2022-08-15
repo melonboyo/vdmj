@@ -1,2 +1,2 @@
-# Transformation between VDM or UML
+# Transformation Between VDM or UML
 
