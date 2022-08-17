@@ -130,10 +130,12 @@ public class VDMPrinter {
                 for (int count = 0; count < varList.size(); count++) 
                 {
                     XMIAttribute var = varList.get(count);
-                    
-                    if (var.getIsAssociative())
-                        writer.write(var.getVisibility() + var.getName() +  " : " + var.getMulType() + var.getRelName() + ";\n");
+ 
+                    if (var.getIsQualified())
+                        writer.write(var.getVisibility() + var.getName() +  " : " + "map " + var.getQualifier() + " to " + var.getMulType() + var.getRelName() + ";\n");
 
+                    else if (var.getIsAssociative())
+                        writer.write(var.getVisibility() + var.getName() +  " : " + var.getMulType() + var.getRelName() + ";\n");
                     else
                         writer.write(var.getVisibility() + var.getName() + ";\n");
                         
@@ -159,7 +161,7 @@ public class VDMPrinter {
                 {
                     XMIOperation op = opList.get(count);
 
-                    writer.write(op.getVisibility() + op.getSignature() + "\n");
+                    writer.write(op.getVisibility() + op.getSignature() + "\n" + op.getShortName() + "\n\n");
                 }
                 writer.write("\n");
             }
@@ -182,7 +184,7 @@ public class VDMPrinter {
                 {
                     XMIOperation fun = funcList.get(count);
 
-                    writer.write(fun.getVisibility() + fun.getSignature() + "\n");
+                    writer.write(fun.getVisibility() + fun.getSignature() + "\n" + fun.getShortName() + "\n\n");
                 }
                 writer.write("\n");
             }

@@ -7,7 +7,8 @@ import org.w3c.dom.NodeList;
 public class XMIAttribute {
     
     public enum AttTypes {type, value, var}
-    public enum MulTypes {set, seq, map}
+    public enum MulTypes {set, seq}
+    
 
     private String name;
     private String relName;
@@ -15,6 +16,8 @@ public class XMIAttribute {
     private String endID;
     private AttTypes attType;
     private MulTypes mulType;
+    private Boolean isQualified;
+    private String qualifier;
 
     private String visibility;
     private Boolean isAssociative;
@@ -23,6 +26,8 @@ public class XMIAttribute {
     public XMIAttribute(Element aElement)
     {     
         this.isAssociative = false;
+        this.isQualified = false;
+
 
         this.name = (aElement.getAttribute("name"));
 
@@ -35,8 +40,6 @@ public class XMIAttribute {
             this.isAssociative = true;
             initializeAssoc(aElement);
         }
-
-  
     }
 
     private void initializeAssoc(Element rElement)
@@ -44,22 +47,50 @@ public class XMIAttribute {
         NodeList relAttList = rElement.getElementsByTagName("UML:AssociationEnd");
         
         Element relStart  = (Element) relAttList.item(0);
-        
-        this.startID = relStart.getAttribute("type");
-       
         Element relEnd  = (Element) relAttList.item(1);
-        this.endID = relEnd.getAttribute("type");
-
-        String mult = relEnd.getAttribute("name");
         
-        if(mult.equals("*"))
-            this.mulType = MulTypes.set;    
+        String indicator = relEnd.getAttribute("name");
 
-        if(mult.equals("(*)"))
-        this.mulType = MulTypes.seq;    
+        if (isQualified(indicator))
+        {
+            this.isQualified = true;
+            String mult = relStart.getAttribute("name");
+            setMultType(mult);
+            
+            this.startID = relEnd.getAttribute("type");  
+            this.endID = relStart.getAttribute("type");  
+            
+            
+            String str = relEnd.getAttribute("name");   
+            str = str.replace("[", "");
+            str = str.replace("]", "");
+            this.qualifier = str;
+        }
 
+        else
+        {
+            this.endID = relEnd.getAttribute("type");   
+            this.startID = relStart.getAttribute("type");
+            setMultType(indicator);
+        }      
     }
 
+    private Boolean isQualified(String indicator)
+    {
+        if(indicator.contains("[") && indicator.contains("]"))
+            return true;
+
+        else return false;
+    }
+
+    private void setMultType(String mult)
+    {
+        if(mult.equals("*"))
+        this.mulType = MulTypes.set;    
+
+        if(mult.equals("(*)"))
+        this.mulType = MulTypes.seq;
+    }
 
     private void setAttType(Element aElement)
     {
@@ -133,6 +164,11 @@ public class XMIAttribute {
         return isAssociative;
     }
 
+    public Boolean getIsQualified()
+    {
+        return isQualified;
+    }
+
     public String getName()
     {
         return name;
@@ -159,7 +195,12 @@ public class XMIAttribute {
             
         else
             return "undef ";
-    } 
+    }
+    
+    public String getQualifier()
+    {
+        return qualifier;
+    }
     
 }
     

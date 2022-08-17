@@ -9,7 +9,7 @@ public class XMIOperation {
     
     private String signature;
     private OpTypes opType;
-
+    private String shortName;
     private String visibility;
 
     public XMIOperation(Element aElement)
@@ -26,7 +26,7 @@ public class XMIOperation {
         
         
         String seg1[] = xmiName.split("\\(");
-        String OpName = seg1[0];
+        String opName = seg1[0];
 
         String seg2[] = (seg1[seg1.length - 1]).split("\\)");
         
@@ -34,26 +34,45 @@ public class XMIOperation {
 
         String args[] = argLine.split(",");
 
-        String vdmArgLine = " " + args[0];
+        String [ ] shortnames = new String [args.length];
 
+
+        for(int n = 0; n < args.length; n++)     
+        {
+            if(args[n].contains("in ") || args[n].contains(" in "))
+            args[n] = args[n].replace("in ", "");
+            
+            String inSeg1[] = args[n].split(":");
+
+            shortnames[n] = inSeg1[0];
+
+            args[n] = inSeg1[inSeg1.length - 1];
+        }
         
+        String vdmArgLine = args[0];
         for(int n = 1 ; n < args.length ; n++)
         {
-            vdmArgLine = vdmArgLine + " *" + args[n]; 
+            vdmArgLine = vdmArgLine + " *" + args[n];            
         }
 
         String seg3[] =  xmiName.split(":");
         String opOut = seg3[seg3.length - 1];
 
         if(this.opType == OpTypes.operation)
-            this.signature = OpName + ":" + vdmArgLine + " ==>" + opOut; 
+            this.signature = opName + ":" + vdmArgLine + " ==>" + opOut; 
 
         else
-            this.signature = OpName + ":" + vdmArgLine + " ->" + opOut;
+            this.signature = opName + ":" + vdmArgLine + " ->" + opOut;
         
         this.visibility = visibility(aElement);
         
 
+        String newShortName = opName + "(" + shortnames[0];
+        for(int n = 1; n < shortnames.length ; n++)
+        {
+            newShortName = newShortName + ","  + shortnames[n];
+        }
+        this.shortName = newShortName + ") ==" ;
     }
 
     private String remove(String s, String r)
@@ -80,6 +99,11 @@ public class XMIOperation {
     public String getSignature()
     {
         return signature;
+    }
+
+    public String getShortName()
+    {
+        return shortName;
     }
 
     public OpTypes getOpType()
