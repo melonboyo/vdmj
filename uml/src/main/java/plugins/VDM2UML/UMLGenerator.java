@@ -24,6 +24,10 @@
 
 package plugins.VDM2UML;
 
+import java.beans.Visibility;
+
+import com.fujitsu.vdmj.lex.Token;
+import com.fujitsu.vdmj.tc.definitions.TCAccessSpecifier;
 import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCExplicitFunctionDefinition;
@@ -63,25 +67,28 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 			def.apply(this, arg);
 		}
 
-		arg.defs.append("}\n");
+		arg.defs.append("}\n\n");
 		return null;
 	}
 	
 	@Override
 	public Object caseInstanceVariableDefinition(TCInstanceVariableDefinition node, Buffers arg)
 	{
-		arg.defs.append(node.accessSpecifier);
+		arg.defs.append("\t");
+		arg.defs.append(visibility(node.accessSpecifier));
 		arg.defs.append(" ");
-		arg.defs.append(node.name.getName() + "::" + node.getType());
+
+	
+		arg.defs.append(node.name.getName() + " : " + removeBrackets(node.getType().toString()));
 		arg.defs.append("\n");
 
 		return null;
 	}
 	
-	@Override
+/* 	@Override
 	public Object caseTypeDefinition(TCTypeDefinition node, Buffers arg)
 	{
-		arg.defs.append(node.accessSpecifier);
+		arg.defs.append(visibility(node.accessSpecifier));
 		arg.defs.append(" ");
 		arg.defs.append(node.name.getName());
 		arg.defs.append(" <<type>>");
@@ -93,7 +100,7 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	@Override
 	public Object caseExplicitFunctionDefinition(TCExplicitFunctionDefinition node, Buffers arg)
 	{
-		arg.defs.append(node.accessSpecifier);
+		arg.defs.append(visibility(node.accessSpecifier));
 		arg.defs.append(" ");
 		arg.defs.append(node.name.getName());
 		arg.defs.append(" <<function>>");
@@ -105,7 +112,7 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	@Override
 	public Object caseExplicitOperationDefinition(TCExplicitOperationDefinition node, Buffers arg)
 	{
-		arg.defs.append(node.accessSpecifier);
+		arg.defs.append(visibility(node.accessSpecifier));
 		arg.defs.append(" ");
 		arg.defs.append(node.name.getName());
 		arg.defs.append("\n");
@@ -128,4 +135,26 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 		return null;
 	}
 
+	*/
+
+	private String visibility(TCAccessSpecifier access)
+	{
+		if(access.access == Token.PUBLIC)
+			return "+";
+
+		
+		else return "-";
+
+	}  
+
+	private String removeBrackets(String str)
+	{
+		if (str.contains("("))
+			str = str.replace("(", "");
+		
+		if (str.contains(")"))
+			str = str.replace(")", "");
+
+		return str;
+	}
 }
