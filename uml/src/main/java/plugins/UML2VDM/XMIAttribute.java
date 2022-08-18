@@ -126,8 +126,11 @@ public class XMIAttribute {
 	
 		if (element.getAttribute("visibility").contains("public"))
             return "public ";
+        
+        if (element.getAttribute("visibility").contains("protected"))
+            return "protected "; 
 
-        else return "";
+        else return "private ";
 	}
 
     public void setRelName(String parent)

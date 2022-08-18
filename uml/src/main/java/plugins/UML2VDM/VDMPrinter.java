@@ -102,7 +102,13 @@ public class VDMPrinter {
                     if(type.getName().contains(":"))
                     {
                         String segments[] = type.getName().split(":");
-                        writer.write(type.getVisibility() + segments[0] + "=" + segments[segments.length - 1] + ";\n");
+                        
+                        if(segments[segments.length - 1].equals(segments[0]))
+
+                            writer.write(type.getVisibility() + segments[0] + "= " + "undef" + ";\n");
+
+                        else
+                            writer.write(type.getVisibility() + segments[0] + "=" + segments[segments.length - 1] + ";\n");
                     }
                     
                     else
@@ -174,7 +180,7 @@ public class VDMPrinter {
     private void printFunctions(FileWriter writer, XMIClass c)
     {
         try {
-            if (!c.getOperations().isEmpty())
+            if (!c.getFunctions().isEmpty())
             {
                 List<XMIOperation> funcList = c.getFunctions();
 
