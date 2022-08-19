@@ -25,7 +25,9 @@
 package plugins.VDM2UML;
 
 import java.beans.Visibility;
+import java.util.Map;
 
+import com.fujitsu.vdmj.lex.LexLocation;
 import com.fujitsu.vdmj.lex.Token;
 import com.fujitsu.vdmj.tc.definitions.TCAccessSpecifier;
 import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
@@ -73,15 +75,46 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	
 	@Override
 	public Object caseInstanceVariableDefinition(TCInstanceVariableDefinition node, Buffers arg)
-	{
-		arg.defs.append("\t");
-		arg.defs.append(visibility(node.accessSpecifier));
-		arg.defs.append(" ");
+	{	
+		
+		if(node.getType().isMap(LexLocation.ANY)) 
+		{
+			String mapName = node.name.getName();
 
-	
-		arg.defs.append(node.name.getName() + " : " + removeBrackets(node.getType().toString()));
-		arg.defs.append("\n");
+			String className = node.classDefinition.name.getName();
+			
+			String mapping = removeBrackets(node.getType().toString());
+			
+			mapping = remove(mapping, "map");
+			
+			String[] seg1 = mapping.split("to");
+			
+			String qualifier  = remove(seg1[0], " "); 
 
+			String mult = "";
+
+			if (seg1[seg1.length - 1].contains("set"))
+				mult = " \"*\" ";
+
+			if (seg1[seg1.length - 1].contains("seq"))
+				mult = " \"(*)\" ";
+			
+			//if (seg1[seg1.length - 1].contains("seq1"))
+
+			arg.asocs.append(className + " \"[" + qualifier +"]\"" + " -->" + 
+			mult + "endclass" + " : " + visibility(node.accessSpecifier) + mapName);
+
+		}
+		
+
+		else{
+			arg.defs.append("\t");
+			arg.defs.append(visibility(node.accessSpecifier));
+			arg.defs.append(" ");
+			arg.defs.append(node.name.getName() + " : " + node.getType().deBracket());
+			arg.defs.append("\n");
+		}
+		
 		return null;
 	}
 	
@@ -156,5 +189,10 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 			str = str.replace(")", "");
 
 		return str;
+	}
+
+	private String remove(String str, String remove)
+	{
+		return str.replace(remove, "");
 	}
 }
