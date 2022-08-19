@@ -76,7 +76,7 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	@Override
 	public Object caseInstanceVariableDefinition(TCInstanceVariableDefinition node, Buffers arg)
 	{	
-		
+
 		if(node.getType().isMap(LexLocation.ANY)) 
 		{
 			String mapName = node.name.getName();
@@ -89,38 +89,52 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 			
 			String[] seg1 = mapping.split("to");
 			
-			String qualifier  = remove(seg1[0], " "); 
+			String qualifier = remove(seg1[0], " "); 
+
+			String endClass = seg1[seg1.length - 1];
 
 			String mult = "";
 
 			if (seg1[seg1.length - 1].contains("set"))
+			{
 				mult = " \"*\" ";
-
-			if (seg1[seg1.length - 1].contains("seq"))
-				mult = " \"(*)\" ";
+				endClass = remove(endClass, " set of ");
+			}
 			
-			//if (seg1[seg1.length - 1].contains("seq1"))
-
-			arg.asocs.append(className + " \"[" + qualifier +"]\"" + " -->" + 
-			mult + "endclass" + " : " + visibility(node.accessSpecifier) + mapName);
-
+			if (seg1[seg1.length - 1].contains("seq"))
+			{
+				mult = " \"(*)\" ";
+				endClass = remove(endClass, " seq of ");
+			}
+				
+			if (seg1[seg1.length - 1].contains("seq1"))
+			{
+				mult = " \"(*)\" ";
+				endClass = remove(endClass, " seq1 of ");
+			}
+		
+			else
+			{
+				arg.asocs.append(className + " \"[" + qualifier +"]\"" + " -->" + 
+				mult + endClass + " : " + visibility(node.accessSpecifier) + mapName);
+			}
 		}
 		
-
 		else{
 			arg.defs.append("\t");
 			arg.defs.append(visibility(node.accessSpecifier));
 			arg.defs.append(" ");
-			arg.defs.append(node.name.getName() + " : " + node.getType().deBracket());
+			arg.defs.append(node.name.getName() + " : " + removeBrackets(node.getType().toString()));
 			arg.defs.append("\n");
 		}
 		
 		return null;
 	}
 	
-/* 	@Override
+	@Override
 	public Object caseTypeDefinition(TCTypeDefinition node, Buffers arg)
 	{
+		arg.defs.append("\t");
 		arg.defs.append(visibility(node.accessSpecifier));
 		arg.defs.append(" ");
 		arg.defs.append(node.name.getName());
@@ -130,6 +144,8 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 		return null;
 	}
 	
+	/* 
+
 	@Override
 	public Object caseExplicitFunctionDefinition(TCExplicitFunctionDefinition node, Buffers arg)
 	{
@@ -172,7 +188,7 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 
 	private String visibility(TCAccessSpecifier access)
 	{
-		if(access.access == Token.PUBLIC)
+		if(access.access.toString().equals("public"))
 			return "+";
 
 		
