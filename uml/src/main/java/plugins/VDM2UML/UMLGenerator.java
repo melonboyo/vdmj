@@ -27,6 +27,8 @@ package plugins.VDM2UML;
 import java.beans.Visibility;
 import java.util.Map;
 
+import javax.lang.model.util.ElementScanner14;
+
 import com.fujitsu.vdmj.lex.LexLocation;
 import com.fujitsu.vdmj.lex.Token;
 import com.fujitsu.vdmj.tc.definitions.TCAccessSpecifier;
@@ -107,7 +109,7 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 		}
 		
 
-		else{
+		else {
 			arg.defs.append("\t");
 			arg.defs.append(visibility(node.accessSpecifier));
 			arg.defs.append(" ");
@@ -171,13 +173,22 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	*/
 
 	private String visibility(TCAccessSpecifier access)
-	{
-		if(access.access == Token.PUBLIC)
-			return "+";
+	{	
+		String res = "";
+		System.out.println("\n\n---ACCESS SPECIFIER: " + access + "\n");
+		System.out.println("\n---PUBLIC TOKEN: " + Token.PUBLIC + "\n\n");
 
+		if (access.access == Token.PUBLIC)
+			res += "+";
+		else if (access.access == Token.PUBLIC)
+			res += "-";
+		else if (access.access == Token.PROTECTED)
+			res += "#";
 		
-		else return "-";
-
+		if (access.isStatic)
+			res += "[static]";
+		
+		return res;
 	}  
 
 	private String removeBrackets(String str)
