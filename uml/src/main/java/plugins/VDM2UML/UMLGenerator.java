@@ -175,8 +175,6 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	private String visibility(TCAccessSpecifier access)
 	{	
 		String res = "";
-		System.out.println("\n\n---ACCESS SPECIFIER: " + access + "\n");
-		System.out.println("\n---PUBLIC TOKEN: " + Token.PUBLIC + "\n\n");
 
 		if (access.access == Token.PUBLIC)
 			res += "+";
