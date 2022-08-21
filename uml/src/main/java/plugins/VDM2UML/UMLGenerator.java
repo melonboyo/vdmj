@@ -83,6 +83,7 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	{	
 		if (node.getType().isMap(LexLocation.ANY))
 		{
+			/** Creates qualified association */
 			String mapName = node.name.getName();
 			String className = node.classDefinition.name.getName();
 
@@ -116,6 +117,9 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 
 		} else if (typeContainsClass(node.getType(), arg.classes)) 
 		{
+			/** Creates associations with no qualifier
+			 *  Does not yet account for complex types (union, product, set of (seq of *), etc.)
+			 */
 			String asocName = node.name.getName();
 			String className = node.classDefinition.name.getName();
 
