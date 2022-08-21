@@ -122,16 +122,14 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 			 */
 			String asocName = node.name.getName();
 			String className = node.classDefinition.name.getName();
-
 			String endClass = removeBrackets(node.getType().toString());
-			
 			String mult = "";
 			
 			if (endClass.contains("set"))
 			{
 				mult = "\"*\" ";
 				endClass = remove(endClass, "set of ");
-			} else			
+			} else
 			if (endClass.contains("seq"))
 			{
 				mult = "\"(*)\" ";
@@ -164,10 +162,7 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 		arg.defs.append("\t");
 		arg.defs.append(visibility(node.accessSpecifier));
 		arg.defs.append(" ");
-		arg.defs.append(node.name.getName());
-		arg.defs.append(node.getType());
-
-		
+		arg.defs.append(node.name.getName());		
 		arg.defs.append(" <<type>>");
 		arg.defs.append("\n");
 
