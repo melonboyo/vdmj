@@ -41,6 +41,7 @@ import com.fujitsu.vdmj.tc.definitions.TCTypeDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCValueDefinition;
 import com.fujitsu.vdmj.tc.definitions.visitors.TCDefinitionVisitor;
 import com.fujitsu.vdmj.tc.lex.TCNameToken;
+import com.fujitsu.vdmj.typechecker.NameScope;
 
 public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 {
@@ -78,8 +79,10 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	@Override
 	public Object caseInstanceVariableDefinition(TCInstanceVariableDefinition node, Buffers arg)
 	{	
+		System.out.println("\n Class name: " + node.name.getName() + ", is the type a class?: (" + node.getType() + ", " + node.getType().isClass(Buffers.env)  + ")\n");
+		System.out.println("Find class for " + node.name.getName() + ": " + node.findName(node.name, NameScope.CLASSNAME) + "\n");
 
-		if(node.getType().isMap(LexLocation.ANY)) 
+		if(node.getType().isMap(LexLocation.ANY))
 		{
 			String mapName = node.name.getName();
 
@@ -91,7 +94,7 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 			
 			String[] seg1 = mapping.split("to");
 			
-			String qualifier = remove(seg1[0], " "); 
+			String qualifier = remove(seg1[0], " ");
 
 			String endClass = seg1[seg1.length - 1];
 
@@ -200,7 +203,7 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 			res += "#";
 		
 		if (access.isStatic)
-			res += "[static]";
+			res += "[St]";
 		
 		return res;
 	}  

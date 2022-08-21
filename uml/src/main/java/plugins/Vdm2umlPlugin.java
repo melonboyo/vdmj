@@ -50,7 +50,7 @@ public class Vdm2umlPlugin extends CommandPlugin
 		{
 			TCClassList classes = interpreter.getTC();
 			
-			Buffers buffers = new Buffers(); 
+			Buffers buffers = new Buffers(classes); 
 
 			for (TCClassDefinition cdef: classes)
 			{
