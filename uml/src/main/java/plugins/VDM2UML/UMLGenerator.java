@@ -143,6 +143,9 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 		arg.defs.append(visibility(node.accessSpecifier));
 		arg.defs.append(" ");
 		arg.defs.append(node.name.getName());
+		arg.defs.append(node.getType());
+
+		
 		arg.defs.append(" <<type>>");
 		arg.defs.append("\n");
 
