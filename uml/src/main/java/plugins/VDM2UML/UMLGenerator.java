@@ -25,6 +25,7 @@
 package plugins.VDM2UML;
 
 import java.beans.Visibility;
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.lang.model.util.ElementScanner14;
@@ -41,6 +42,7 @@ import com.fujitsu.vdmj.tc.definitions.TCTypeDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCValueDefinition;
 import com.fujitsu.vdmj.tc.definitions.visitors.TCDefinitionVisitor;
 import com.fujitsu.vdmj.tc.lex.TCNameToken;
+import com.fujitsu.vdmj.tc.types.TCType;
 import com.fujitsu.vdmj.typechecker.NameScope;
 
 public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
@@ -79,53 +81,69 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	@Override
 	public Object caseInstanceVariableDefinition(TCInstanceVariableDefinition node, Buffers arg)
 	{	
-		System.out.println("\n Class name: " + node.name.getName() + ", is the type a class?: (" + node.getType() + ", " + node.getType().isClass(Buffers.env)  + ")\n");
-		System.out.println("Find class for " + node.name.getName() + ": " + node.findName(node.name, NameScope.CLASSNAME) + "\n");
-
-		if(node.getType().isMap(LexLocation.ANY))
+		if (node.getType().isMap(LexLocation.ANY))
 		{
 			String mapName = node.name.getName();
-
 			String className = node.classDefinition.name.getName();
-			
+
 			String mapping = removeBrackets(node.getType().toString());
-			
 			mapping = remove(mapping, "map");
 			
 			String[] seg1 = mapping.split("to");
-			
 			String qualifier = remove(seg1[0], " ");
-
 			String endClass = seg1[seg1.length - 1];
-
 			String mult = "";
-
+			
 			if (seg1[seg1.length - 1].contains("set"))
 			{
 				mult = " \"*\" ";
 				endClass = remove(endClass, " set of ");
-			}
-			
+			} else 			
 			if (seg1[seg1.length - 1].contains("seq"))
 			{
 				mult = " \"(*)\" ";
 				endClass = remove(endClass, " seq of ");
-			}
-				
+			} else 				
 			if (seg1[seg1.length - 1].contains("seq1"))
 			{
 				mult = " \"(*)\" ";
 				endClass = remove(endClass, " seq1 of ");
 			}
 		
-			else
+			arg.asocs.append(className + " \"[" + qualifier +"]\"" + " -->" + 
+			mult + endClass + " : " + visibility(node.accessSpecifier) + mapName);
+			arg.asocs.append("\n");
+
+		} else if (typeContainsClass(node.getType(), arg.classes)) 
+		{
+			String asocName = node.name.getName();
+			String className = node.classDefinition.name.getName();
+
+			String endClass = removeBrackets(node.getType().toString());
+			
+			String mult = "";
+			
+			if (endClass.contains("set"))
 			{
-				arg.asocs.append(className + " \"[" + qualifier +"]\"" + " -->" + 
-				mult + endClass + " : " + visibility(node.accessSpecifier) + mapName);
+				mult = "\"*\" ";
+				endClass = remove(endClass, "set of ");
+			} else			
+			if (endClass.contains("seq"))
+			{
+				mult = "\"(*)\" ";
+				endClass = remove(endClass, "seq of ");
+			} else				
+			if (endClass.contains("seq1"))
+			{
+				mult = "\"(*)\" ";
+				endClass = remove(endClass, "seq1 of ");
 			}
-		}
 		
-		else {
+			arg.asocs.append(className + " --> " + 
+			mult + endClass + " : " + visibility(node.accessSpecifier) + asocName);
+			arg.asocs.append("\n");
+		} else
+		{
 			arg.defs.append("\t");
 			arg.defs.append(visibility(node.accessSpecifier));
 			arg.defs.append(" ");
@@ -226,4 +244,20 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	{
 		return str.replace(remove, "");
 	}
-}
+
+	private Boolean typeContainsClass(TCType type, ArrayList<String> classList)
+	{	
+		if (type.isClass(Buffers.env))
+			return true;
+		
+		String typeString = removeBrackets(type.toString());
+		String[] segs = typeString.split(" of | to ");
+		for (String seg : segs)
+			if (classList.contains(seg))
+			{
+				return true;
+			}
+		return false;
+	}
+}	
+
