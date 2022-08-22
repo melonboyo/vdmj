@@ -49,16 +49,19 @@ public class Vdm2umlPlugin extends CommandPlugin
 		{
 			TCClassList classes = interpreter.getTC();
 			
-			String title = "temp";
-
 			Buffers buffers = new Buffers(classes); 
 
+			for (TCClassDefinition cdef: classes)
+			{
+				buffers.classes.add(cdef.name.toString());
+			}
+			
 			for (TCClassDefinition cdef: classes)
 			{
 				cdef.apply(new UMLGenerator(), buffers);
 			}
 			
-			StringBuilder boiler = buildBoiler(title);
+			StringBuilder boiler = buildBoiler();
 
 			System.out.println(boiler.toString());
 			System.out.println(buffers.defs.toString());
@@ -73,14 +76,11 @@ public class Vdm2umlPlugin extends CommandPlugin
 		return true;
 	}
 
-	public StringBuilder buildBoiler(String title) 
+	public StringBuilder buildBoiler() 
 	{
 		StringBuilder boiler = new StringBuilder();
 
 		boiler.append("@startuml\n\n");
-		boiler.append("title \"");
-		boiler.append(title);
-		boiler.append("\"\n\n");
 		boiler.append("allow_mixing\n");
 		boiler.append("skinparam packageStyle frame\n");
 		boiler.append("skinparam Shadowing false\n");
