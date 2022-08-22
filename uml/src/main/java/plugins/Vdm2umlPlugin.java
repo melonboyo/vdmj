@@ -24,15 +24,16 @@
 
 package plugins;
 
+import plugins.VDM2UML.Buffers;
+import plugins.VDM2UML.UMLGenerator;
 import com.fujitsu.vdmj.commands.CommandPlugin;
 import com.fujitsu.vdmj.runtime.ClassInterpreter;
 import com.fujitsu.vdmj.runtime.Interpreter;
 import com.fujitsu.vdmj.tc.definitions.TCClassDefinition;
 import com.fujitsu.vdmj.tc.definitions.TCClassList;
-
-import plugins.VDM2UML.Buffers;
-import plugins.VDM2UML.UMLGenerator;
-
+import java.io.File;
+import java.io.FileWriter;  
+import java.io.IOException;
 
 
 public class Vdm2umlPlugin extends CommandPlugin
@@ -42,13 +43,29 @@ public class Vdm2umlPlugin extends CommandPlugin
 		super(interpreter);
 	}	
 
+	private StringBuilder boiler = new StringBuilder();
+
+
 	@Override
 	public boolean run(String[] argv) throws Exception
 	{
 		if (interpreter instanceof ClassInterpreter)
 		{
-			TCClassList classes = interpreter.getTC();
 			
+			String path = null;
+		
+			if (argv.length == 2)
+			{
+				path = argv[1];
+			}
+			else if (argv.length != 1)
+			{
+				help();
+				return true;
+			}
+			
+			TCClassList classes = interpreter.getTC();
+
 			Buffers buffers = new Buffers(classes); 
 
 			for (TCClassDefinition cdef: classes)
@@ -61,12 +78,8 @@ public class Vdm2umlPlugin extends CommandPlugin
 				cdef.apply(new UMLGenerator(), buffers);
 			}
 			
-			StringBuilder boiler = buildBoiler();
-
-			System.out.println(boiler.toString());
-			System.out.println(buffers.defs.toString());
-			System.out.println(buffers.asocs.toString());
-			System.out.println("@enduml");
+			buildBoiler();
+			printPlant(path, buffers);
 		}
 		else
 		{
@@ -78,8 +91,6 @@ public class Vdm2umlPlugin extends CommandPlugin
 
 	public StringBuilder buildBoiler() 
 	{
-		StringBuilder boiler = new StringBuilder();
-
 		boiler.append("@startuml\n\n");
 		boiler.append("allow_mixing\n");
 		boiler.append("skinparam packageStyle frame\n");
@@ -94,6 +105,29 @@ public class Vdm2umlPlugin extends CommandPlugin
 
 		return boiler;
 	}
+
+	public void printPlant(String path, Buffers buffers)
+    {   
+        try {
+			
+			File plantFile = new File(path + "/" + "Model" + ".wsd");
+			
+			plantFile.createNewFile();
+				
+			FileWriter writer = new FileWriter(plantFile.getAbsolutePath());
+			
+			writer.write(boiler.toString());
+			writer.write(buffers.defs.toString());
+			writer.write(buffers.asocs.toString());
+			writer.write("@enduml");
+			writer.close();   
+
+            System.out.println("generated PlantUML file");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 	@Override
 	public String help()
