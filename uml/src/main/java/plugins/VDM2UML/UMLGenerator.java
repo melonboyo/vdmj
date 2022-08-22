@@ -24,12 +24,8 @@
 
 package plugins.VDM2UML;
 
-import java.beans.Visibility;
+
 import java.util.ArrayList;
-import java.util.Map;
-
-import javax.lang.model.util.ElementScanner14;
-
 import com.fujitsu.vdmj.lex.LexLocation;
 import com.fujitsu.vdmj.lex.Token;
 import com.fujitsu.vdmj.tc.definitions.TCAccessSpecifier;
