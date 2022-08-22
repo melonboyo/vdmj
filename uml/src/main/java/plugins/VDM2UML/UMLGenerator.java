@@ -61,14 +61,6 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 		arg.defs.append(node.name.getName());
 		arg.defs.append("\n{\n");
 
-		if (!node.supernames.isEmpty())
-		{
-			for (TCNameToken supername: node.supernames)
-			{
-				arg.asocs.append(node.name.getName() + " <|-- " + supername.getName());
-			}
-		}
-
 		for (TCDefinition def: node.definitions)
 		{
 			def.apply(this, arg);
@@ -282,6 +274,12 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	{	
 		if (type.isClass(Buffers.env))
 			return true;
+		
+		if (type.definitions == null)
+			System.out.println("No definitions");
+		else
+			for (TCDefinition def : type.definitions)
+				System.out.println("Defintion: " + def.name.toString());		
 		
 		String typeString = removeBrackets(type.toString());
 		String[] segs = typeString.split(" of | to ");
