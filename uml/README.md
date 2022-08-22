@@ -3,7 +3,6 @@
 ## Contents
 
 
-## Title 1
 
 ## Basic Data Types
 Basic data types are included in PlantUML as the type of a class attribute.
@@ -11,11 +10,8 @@ Basic data types are included in PlantUML as the type of a class attribute.
 
 ## Compound Types
 
-### multiplicity types
+### Multiplicity Types
 Non associative multiplicity types are included as the type of a class attribute.
-
-
-
 
 #### set:
 non associative: set of element
@@ -29,7 +25,7 @@ associative: class -> "(*)" object
 non associative: seq1 of element
 associative: class "1" -> "(*)" object
 
-### qualified association types
+### Qualified Association Types
 
 #### map:
 non associative: "mapName" map qualifier to multiplicity element
@@ -39,8 +35,7 @@ associative: class "[qualifier]" -> multiplicity object
 non associative: "mapName" map qualifier to multiplicity element
 associative: class "[(qualifier)]" -> multiplicity object
 
-### Other compound types
-
+### Other Compound Types
 
 #### optinal type: "[*]"
 #### composite type: "::" 
