@@ -70,6 +70,11 @@ public class Vdm2umlPlugin extends CommandPlugin
 
 			for (TCClassDefinition cdef: classes)
 			{
+				buffers.classes.add(cdef.name.toString());
+			}
+			
+			for (TCClassDefinition cdef: classes)
+			{
 				cdef.apply(new UMLGenerator(), buffers);
 			}
 			
