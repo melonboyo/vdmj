@@ -137,7 +137,7 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 			} else				
 			if (endClass.contains("seq1"))
 			{
-				mult = "\"(*)\" ";
+				mult = "\"(1..*)\" ";
 				endClass = remove(endClass, "seq1 of ");
 			}
 		
