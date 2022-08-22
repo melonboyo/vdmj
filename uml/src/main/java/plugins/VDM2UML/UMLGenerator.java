@@ -140,23 +140,42 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 		arg.defs.append(visibility(node.accessSpecifier));
 		arg.defs.append(" ");
 		arg.defs.append(node.name.getName());
-		arg.defs.append(node.getType());
-
-		
+		//arg.defs.append(node.getType());
 		arg.defs.append(" <<type>>");
-		arg.defs.append("\n");
+		arg.defs.append("\n");		
+
+		return null; 
+	}
+
+	@Override
+	public Object caseValueDefinition(TCValueDefinition node, Buffers arg)
+	{
+		for (TCDefinition def: node.getDefinitions())
+		{
+			arg.defs.append("\t");
+			arg.defs.append(visibility(def.accessSpecifier));
+			arg.defs.append(" ");
+			arg.defs.append(def.name.getName());
+			arg.defs.append(" : ");
+			arg.defs.append(def.getType());
+			arg.defs.append(" <<value>>");
+			arg.defs.append("\n");
+		}
 
 		return null;
 	}
 	
-	/* 
 
 	@Override
 	public Object caseExplicitFunctionDefinition(TCExplicitFunctionDefinition node, Buffers arg)
 	{
+		arg.defs.append("\t");
 		arg.defs.append(visibility(node.accessSpecifier));
 		arg.defs.append(" ");
 		arg.defs.append(node.name.getName());
+
+		arg.defs.append(getPlantArgs(node.getType().toString()));
+
 		arg.defs.append(" <<function>>");
 		arg.defs.append("\n");
 
@@ -166,30 +185,42 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 	@Override
 	public Object caseExplicitOperationDefinition(TCExplicitOperationDefinition node, Buffers arg)
 	{
+		arg.defs.append("\t");
 		arg.defs.append(visibility(node.accessSpecifier));
 		arg.defs.append(" ");
 		arg.defs.append(node.name.getName());
+		arg.defs.append(getPlantArgs(node.getType().toString()));
 		arg.defs.append("\n");
 
 		return null;
 	}
-	
-	@Override
-	public Object caseValueDefinition(TCValueDefinition node, Buffers arg)
+
+
+	private String getPlantArgs(String args)
 	{
-		for (TCDefinition def: node.getDefinitions())
+		String str0 = removeBrackets(args);
+		String splitter = "";
+		if(str0.contains("->"))
+			splitter = " ->";
+
+		if(str0.contains("==>"))
+			splitter = " ==>";
+		
+		String seg1[] = str0.split(splitter);
+		String out = seg1[seg1.length - 1];
+		String vdmArgLine = seg1[0];
+
+		if(args.contains("*"))
 		{
-			arg.defs.append(def.accessSpecifier);
-			arg.defs.append(" ");
-			arg.defs.append(" <<value>>");
-			arg.defs.append(def.name.getName());
-			arg.defs.append("\n");
+			String seg2[] = seg1[0].split(" \\* "); 
+			vdmArgLine = seg2[0];
+			for(int n = 1 ; n < seg2.length ; n++)
+			{
+				vdmArgLine = vdmArgLine + ", " + seg2[n];            
+			} 
 		}
-
-		return null;
+		return "(" + vdmArgLine + ")" + ":" + out; 
 	}
-
-	*/
 
 	private String visibility(TCAccessSpecifier access)
 	{	
@@ -197,13 +228,13 @@ public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 
 		if (access.access == Token.PUBLIC)
 			res += "+";
-		else if (access.access == Token.PUBLIC)
+		else if (access.access == Token.PRIVATE)
 			res += "-";
 		else if (access.access == Token.PROTECTED)
 			res += "#";
 		
 		if (access.isStatic)
-			res += "[static]";
+			res += "[St]";
 		
 		return res;
 	}  
