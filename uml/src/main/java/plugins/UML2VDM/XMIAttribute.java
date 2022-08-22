@@ -3,12 +3,11 @@ package plugins.UML2VDM;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 public class XMIAttribute {
     
     public enum AttTypes {type, value, var}
-    public enum MulTypes {set, seq}
-    
+    public enum MulTypes {set, seq, seq1}
+    public enum QualiTypes {map, inmap}
 
     private String name;
     private String relName;
@@ -16,7 +15,9 @@ public class XMIAttribute {
     private String endID;
     private AttTypes attType;
     private MulTypes mulType;
+    private QualiTypes qualiType;
     private Boolean isQualified;
+
     private String qualifier;
 
     private String visibility;
@@ -51,7 +52,7 @@ public class XMIAttribute {
         
         String indicator = relEnd.getAttribute("name");
 
-        if (isQualified(indicator))
+        if (setQualified(indicator))
         {
             this.isQualified = true;
             String mult = relStart.getAttribute("name");
@@ -59,11 +60,21 @@ public class XMIAttribute {
             
             this.startID = relEnd.getAttribute("type");  
             this.endID = relStart.getAttribute("type");  
-            
-            
             String str = relEnd.getAttribute("name");   
-            str = str.replace("[", "");
-            str = str.replace("]", "");
+
+            if(qualiType == QualiTypes.map)
+            {
+                str = str.replace("[", "");
+                str = str.replace("]", "");
+            }
+
+            else if (qualiType == QualiTypes.inmap)
+            {
+                str = str.replace("[(", "");
+                str = str.replace(")]", "");
+            }
+
+            
             this.qualifier = str;
         }
 
@@ -75,10 +86,19 @@ public class XMIAttribute {
         }      
     }
 
-    private Boolean isQualified(String indicator)
+    private Boolean setQualified(String indicator)
     {
-        if(indicator.contains("[") && indicator.contains("]"))
+        if(indicator.contains("[(") && indicator.contains(")]"))
+        {
+            this.qualiType = QualiTypes.inmap;
             return true;
+        }    
+
+        else if(indicator.contains("[") && indicator.contains("]"))
+        {
+            this.qualiType = QualiTypes.map;
+            return true;
+        }    
 
         else return false;
     }
@@ -86,10 +106,14 @@ public class XMIAttribute {
     private void setMultType(String mult)
     {
         if(mult.equals("*"))
-        this.mulType = MulTypes.set;    
+            this.mulType = MulTypes.set;    
 
         if(mult.equals("(*)"))
-        this.mulType = MulTypes.seq;
+            this.mulType = MulTypes.seq;
+
+        if(mult.equals("(1...*)") || mult.equals("(1..*)") || mult.equals("(1.*)"))
+            this.mulType = MulTypes.seq1;
+        
     }
 
     private void setAttType(Element aElement)
@@ -187,6 +211,11 @@ public class XMIAttribute {
         return attType;
     }
 
+    public QualiTypes getQualiType()
+    {
+        return qualiType;
+    }
+
     public String getMulType()
     {
         if (this.mulType == MulTypes.set)
@@ -195,9 +224,8 @@ public class XMIAttribute {
         if (this.mulType == MulTypes.seq)
             return "seq of ";
         
-            
         else
-            return "undef ";
+            return "";
     }
     
     public String getQualifier()

@@ -39,7 +39,6 @@ import com.fujitsu.vdmj.tc.definitions.TCValueDefinition;
 import com.fujitsu.vdmj.tc.definitions.visitors.TCDefinitionVisitor;
 import com.fujitsu.vdmj.tc.lex.TCNameToken;
 import com.fujitsu.vdmj.tc.types.TCType;
-import com.fujitsu.vdmj.typechecker.NameScope;
 
 public class UMLGenerator extends TCDefinitionVisitor<Object, Buffers>
 {

@@ -1,6 +1,9 @@
 package plugins.UML2VDM;
 
 import java.util.*;
+
+import plugins.UML2VDM.XMIAttribute.QualiTypes;
+
 import java.io.File; 
 import java.io.IOException;
 import java.io.FileWriter;  
@@ -138,7 +141,15 @@ public class VDMPrinter {
                     XMIAttribute var = varList.get(count);
  
                     if (var.getIsQualified())
-                        writer.write(var.getVisibility() + var.getName() +  " : " + "map " + var.getQualifier() + " to " + var.getMulType() + var.getRelName() + ";\n");
+                    {
+                        String maptype = "";
+                        if(var.getQualiType() == QualiTypes.map)
+                            maptype = "map ";
+                        else if(var.getQualiType() == QualiTypes.inmap)
+                            maptype = "inmap ";
+                  
+                        writer.write(var.getVisibility() + var.getName() +  " : " + maptype + var.getQualifier() + " to " + var.getMulType() + var.getRelName() + ";\n");
+                    }
 
                     else if (var.getIsAssociative())
                         writer.write(var.getVisibility() + var.getName() +  " : " + var.getMulType() + var.getRelName() + ";\n");

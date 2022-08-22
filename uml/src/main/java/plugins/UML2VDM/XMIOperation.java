@@ -85,10 +85,10 @@ public class XMIOperation {
 		if (element.getAttribute("visibility").contains("private")) 
 			return "private ";
 	
-		if (element.getAttribute("visibility").contains("public"))
+		else if (element.getAttribute("visibility").contains("public"))
             return "public ";
             
-        if (element.getAttribute("visibility").contains("protected"))
+        else if (element.getAttribute("visibility").contains("protected"))
             return "protected "; 
 
         else return "private ";
